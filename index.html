@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acme Print Co. — Custom Business Cards</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+
+    <!-- Production tenants paste exactly this one line: -->
+    <script async src="/element/filecheck.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="logo">Acme Print Co.</div>
+        <nav>
+            <a href="#">Shop</a>
+            <a href="#">Templates</a>
+            <a href="#">Help</a>
+            <a href="#" class="cart">Cart (0)</a>
+        </nav>
+    </header>
+
+    <main class="product">
+        <section class="product-gallery">
+            <img class="product-image" src="/product-placeholder.svg" alt="Premium Business Cards" />
+            <div class="thumbs">
+                <span class="thumb active"></span>
+                <span class="thumb"></span>
+                <span class="thumb"></span>
+                <span class="thumb"></span>
+            </div>
+        </section>
+
+        <section class="product-details">
+            <p class="breadcrumb">Stationery / Business Cards</p>
+            <h1>Premium Business Cards</h1>
+            <p class="rating">★★★★★ <span>(842 reviews)</span></p>
+            <p class="price">
+                <span class="price-now">$29.00</span>
+                <span class="price-was">$39.00</span>
+                <span class="badge">Save 26%</span>
+            </p>
+
+            <p class="copy">
+                350 gsm matte stock with optional spot-UV finish. Print-ready files welcome —
+                we'll automatically check resolution, bleed, and colour profile before sending
+                to press.
+            </p>
+
+            <div class="options">
+                <label>Quantity
+                    <select>
+                        <option>100</option>
+                        <option selected>250</option>
+                        <option>500</option>
+                        <option>1,000</option>
+                    </select>
+                </label>
+                <label>Finish
+                    <select>
+                        <option>Matte</option>
+                        <option>Gloss</option>
+                        <option>Spot UV</option>
+                    </select>
+                </label>
+            </div>
+
+            <!-- ───────────── INLINE EMBED ─────────────
+                 Filecheck Element mounts directly into this slot.
+                 The customer never leaves the page. -->
+            <div class="upload-section">
+                <h2>Upload your artwork</h2>
+                <p class="upload-hint">
+                    Drag &amp; drop a PDF, AI, or PSD. We'll check it before you check out.
+                </p>
+                <div id="fc-inline"></div>
+            </div>
+
+            <div class="cta-row">
+                <!-- ───────────── MODAL TRIGGER ─────────────
+                     Same element, but presented in a centered dialog overlay
+                     instead of inline. Useful if your layout is tight or you
+                     prefer a deliberate "upload step". -->
+                <button id="open-uploader" class="btn-secondary" type="button">
+                    Upload Files
+                </button>
+
+                <button class="btn-primary" type="button">Add to Cart — $29.00</button>
+            </div>
+
+            <ul class="trust">
+                <li>✓ Free preflight check</li>
+                <li>✓ Print-ready guarantee</li>
+                <li>✓ 3-day production</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- Native <dialog> used by the modal demo. The Filecheck element
+         mounts into #fc-modal on first open. -->
+    <dialog id="uploader-dialog" class="uploader-dialog">
+        <header>
+            <h2>Upload your artwork</h2>
+            <button id="close-uploader" class="close" aria-label="Close">×</button>
+        </header>
+        <div id="fc-modal"></div>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
