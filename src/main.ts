@@ -35,7 +35,15 @@ declare global {
     }
 }
 
-const PUBLISHABLE_KEY = 'pk_test_demo';
+const DEFAULT_PUBLISHABLE_KEY = 'pk_test_demo';
+
+// URL overrides (so a single deployed demo can swap tenant/rule
+// without rebuilding):
+//   ?pk=dom_01ABC...       publishable / domain key
+//   ?rule=rul_01XYZ...     intake rule (falls back to domain default)
+const params = new URLSearchParams(location.search);
+const PUBLISHABLE_KEY = params.get('pk') ?? DEFAULT_PUBLISHABLE_KEY;
+const RULE_ID         = params.get('rule') ?? undefined;
 
 // For local development point the iframe at the client dev server.
 // In production this falls back to https://cdn.filecheck.io/client/v1/
@@ -68,8 +76,10 @@ async function main(): Promise<void> {
 
     const fc = Filecheck(PUBLISHABLE_KEY, iframeSrc ? { iframeSrc } : {});
 
+    const createOpts = RULE_ID ? { ruleId: RULE_ID } : undefined;
+
     // ── inline ──
-    const inline = fc.elements.create('intake');
+    const inline = fc.elements.create('intake', createOpts);
     inline.mount('#fc-inline');
 
     // ── modal ──
@@ -81,7 +91,7 @@ async function main(): Promise<void> {
 
     openBtn.addEventListener('click', () => {
         if (!modalElement) {
-            modalElement = fc.elements.create('intake');
+            modalElement = fc.elements.create('intake', createOpts);
             modalElement.mount('#fc-modal');
         }
         dialog.showModal();
