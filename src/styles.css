@@ -157,11 +157,10 @@ body {
 
 /* ─── upload section (hosts inline element) ─── */
 .upload-section {
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 16px;
-    background: var(--bg-soft);
+    /* border: 1px solid var(--line); */
+    /* border-radius: var(--radius); */
     margin-bottom: 24px;
+    overflow: hidden;
 }
 .upload-section h2 {
     margin: 0 0 4px;
@@ -179,7 +178,13 @@ body {
    itself controls layout inside the shadow root; we just provide
    a sane minimum height so the empty slot isn't 0px tall. */
 #fc-inline {
-    min-height: 220px;
+    height: auto;
+    max-height: 50vh;
+}
+
+#add-to-cart:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* ─── CTA buttons ─── */

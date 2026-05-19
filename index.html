@@ -69,10 +69,6 @@
                  Filecheck Element mounts directly into this slot.
                  The customer never leaves the page. -->
             <div class="upload-section">
-                <h2>Upload your artwork</h2>
-                <p class="upload-hint">
-                    Drag &amp; drop a PDF, AI, or PSD. We'll check it before you check out.
-                </p>
                 <div id="fc-inline"></div>
             </div>
 
@@ -81,11 +77,11 @@
                      Same element, but presented in a centered dialog overlay
                      instead of inline. Useful if your layout is tight or you
                      prefer a deliberate "upload step". -->
-                <button id="open-uploader" class="btn-secondary" type="button">
+                <button id="open-uploader" style="display:none" class="btn-secondary" type="button">
                     Upload Files
                 </button>
 
-                <button id="add-to-cart" class="btn-primary" type="button" disabled>Add to Cart — $29.00</button>
+                <button id="add-to-cart" class="btn-primary" type="button" >Add to Cart — $29.00</button>
             </div>
 
             <ul class="trust">

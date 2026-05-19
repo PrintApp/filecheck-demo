@@ -41,7 +41,7 @@ declare global {
             elements: {
                 create: (
                     type: 'intake',
-                    options?: { ruleId?: string },
+                    options?: { ruleId?: string; presentation?: 'inline' | 'dialog' },
                 ) => IntakeElement;
             };
         };
@@ -110,13 +110,14 @@ async function main(): Promise<void> {
     const bindGate = (el: IntakeElement, key: string) => {
         canProceedBy.set(key, false);
         el.on('status', (e: IntakeStatusPayload) => {
+            console.log(`[demo] status update from ${key}:`, e);
             canProceedBy.set(key, e.canProceed);
             refreshGate();
         });
     };
 
     // ── inline ──
-    const inline = fc.elements.create('intake', createOpts);
+    const inline = fc.elements.create('intake', { ...createOpts, presentation: 'inline' });
     bindGate(inline, 'inline');
     inline.mount('#fc-inline');
 
@@ -129,7 +130,7 @@ async function main(): Promise<void> {
 
     openBtn.addEventListener('click', () => {
         if (!modalElement) {
-            modalElement = fc.elements.create('intake', createOpts);
+            modalElement = fc.elements.create('intake', { ...createOpts, presentation: 'dialog' });
             bindGate(modalElement, 'modal');
             modalElement.mount('#fc-modal');
         }
