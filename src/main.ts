@@ -12,6 +12,23 @@
 // The IIFE bundle attaches Filecheck to window. We declare its shape
 // so TS is happy without importing the package (we want to prove the
 // script-tag integration path works exactly as a tenant would use it).
+type IntakeStatusPayload = {
+    status:     'idle' | 'incomplete' | 'uploading' | 'processing' | 'ready' | 'partial' | 'rejected';
+    terminal:   boolean;
+    canProceed: boolean;
+    ruleId:     string | null;
+    jobId:      string | null;
+    files:      Array<{ id: string; name: string; outcome: 'pass' | 'warn' | 'fail' | null; status: string }>;
+};
+
+type IntakeElement = {
+    mount:   (target: string | Element) => void;
+    unmount: () => void;
+    destroy: () => void;
+    on:      (event: 'ready' | 'status' | 'ui' | 'error', fn: (e: any) => void) => () => void;
+    off:     (event: 'ready' | 'status' | 'ui' | 'error', fn: (e: any) => void) => void;
+};
+
 declare global {
     interface Window {
         Filecheck: (
@@ -25,11 +42,7 @@ declare global {
                 create: (
                     type: 'intake',
                     options?: { ruleId?: string },
-                ) => {
-                    mount: (target: string | Element) => void;
-                    unmount: () => void;
-                    destroy: () => void;
-                };
+                ) => IntakeElement;
             };
         };
     }
@@ -78,8 +91,33 @@ async function main(): Promise<void> {
 
     const createOpts = RULE_ID ? { ruleId: RULE_ID } : undefined;
 
+    // ── add-to-cart gating ──
+    // The element emits `status` on every intake-status transition. Its
+    // `canProceed` flag has already been collapsed inside the iframe
+    // from the resolved rule's `policy.onFail` (so a failed file under
+    // `onFail=reject` gives canProceed=false; the same failed file
+    // under `onFail=accept_with_warnings` gives canProceed=true).
+    //
+    // Track each element separately so either uploader can satisfy the
+    // gate — the customer might use inline OR modal, not necessarily
+    // both.
+    const addToCart = document.getElementById('add-to-cart') as HTMLButtonElement;
+    const canProceedBy = new Map<string, boolean>();
+    const refreshGate = () => {
+        const ok = [...canProceedBy.values()].some(Boolean);
+        addToCart.disabled = !ok;
+    };
+    const bindGate = (el: IntakeElement, key: string) => {
+        canProceedBy.set(key, false);
+        el.on('status', (e: IntakeStatusPayload) => {
+            canProceedBy.set(key, e.canProceed);
+            refreshGate();
+        });
+    };
+
     // ── inline ──
     const inline = fc.elements.create('intake', createOpts);
+    bindGate(inline, 'inline');
     inline.mount('#fc-inline');
 
     // ── modal ──
@@ -87,11 +125,12 @@ async function main(): Promise<void> {
     const openBtn = document.getElementById('open-uploader')!;
     const closeBtn = document.getElementById('close-uploader')!;
 
-    let modalElement: ReturnType<typeof fc.elements.create> | null = null;
+    let modalElement: IntakeElement | null = null;
 
     openBtn.addEventListener('click', () => {
         if (!modalElement) {
             modalElement = fc.elements.create('intake', createOpts);
+            bindGate(modalElement, 'modal');
             modalElement.mount('#fc-modal');
         }
         dialog.showModal();
