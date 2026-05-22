@@ -6,7 +6,46 @@
     <title>Acme Print Co. — Custom Business Cards</title>
     <link rel="stylesheet" href="/src/styles.css" />
 
-    <!-- Production tenants paste exactly this one line: -->
+    <!--
+      Production tenants paste exactly these two lines. In production the
+      `FILECHECK_ELEMENT_CONFIG` is prepended to the bundle itself by the
+      per-tenant CDN edge function (URL like
+      https://cdn.filecheck.io/elements/<publishableKey>/filecheck.js), so
+      a real customer ships only the <script> tag. We inline it here to
+      simulate that injection for local development.
+    -->
+    <script>
+        // Simulated CDN-injected config. In production this whole object
+        // is prepended to /elements/<publishableKey>/filecheck.js by a
+        // Lambda@Edge in front of CloudFront, so the customer's page
+        // only ships the <script> tag below.
+        window.FILECHECK_ELEMENT_CONFIG = {
+            publishableKey:        'pk_test_demo',
+            presentation:          'inline',
+            mountSelector:         '#fc-inline',
+            moveMountBefore:       '',
+            cartButtonSelector:    '',
+            customVariantSelector: '',
+            elementTheme:          'light',
+            customJs:              '',
+            customCss:             '',
+            customCss:             '',
+        };
+        // Local-dev only: forward ?pk=… / ?rule=… overrides and point
+        // the iframe at the @filecheck/client dev server.
+        (function () {
+            var p = new URLSearchParams(location.search);
+            var pk = p.get('pk');
+            var ru = p.get('rule');
+            var jo = p.get('job');
+            if (pk) window.FILECHECK_ELEMENT_CONFIG.publishableKey = pk;
+            if (ru) window.FILECHECK_ELEMENT_CONFIG.ruleId         = ru;
+            if (jo) window.FILECHECK_ELEMENT_CONFIG.jobId          = jo;
+            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                window.FILECHECK_ELEMENT_CONFIG.iframeSrc = 'http://localhost:8010/';
+            }
+        })();
+    </script>
     <script async src="/element/filecheck.js"></script>
 </head>
 <body>
@@ -65,22 +104,19 @@
                 </label>
             </div>
 
-            <!-- ───────────── INLINE EMBED ─────────────
-                 Filecheck Element mounts directly into this slot.
-                 The customer never leaves the page. -->
+            <!-- ───────────── FILECHECK MOUNT SLOT ─────────────
+                 The Element auto-mounts here when `presentation: 'inline'`.
+                 When `presentation: 'modal'`, the Element replaces this
+                 slot's contents with a host-rendered "Upload Files" button
+                 that opens a dialog containing the iframe.
+                 The host page does not call mount() itself. -->
             <div class="upload-section">
                 <div id="fc-inline"></div>
             </div>
 
             <div class="cta-row">
-                <!-- ───────────── MODAL TRIGGER ─────────────
-                     Same element, but presented in a centered dialog overlay
-                     instead of inline. Useful if your layout is tight or you
-                     prefer a deliberate "upload step". -->
-                <button id="open-uploader" style="display:none" class="btn-secondary" type="button">
-                    Upload Files
-                </button>
-
+                <!-- The Element wires the cart-button disabled state to
+                     the iframe's `canProceed` status — host JS does nothing. -->
                 <button id="add-to-cart" class="btn-primary" type="button" >Add to Cart — $29.00</button>
             </div>
 
@@ -91,16 +127,6 @@
             </ul>
         </section>
     </main>
-
-    <!-- Native <dialog> used by the modal demo. The Filecheck element
-         mounts into #fc-modal on first open. -->
-    <dialog id="uploader-dialog" class="uploader-dialog">
-        <header>
-            <h2>Upload your artwork</h2>
-            <button id="close-uploader" class="close" aria-label="Close">×</button>
-        </header>
-        <div id="fc-modal"></div>
-    </dialog>
 
     <script type="module" src="/src/main.ts"></script>
 </body>
