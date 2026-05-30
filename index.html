@@ -31,15 +31,15 @@
             customCss:             '',
             customCss:             '',
         };
-        // Local-dev only: forward ?pk=… / ?rule=… overrides and point
+        // Local-dev only: forward ?pk=… / ?workflow=… overrides and point
         // the iframe at the @filecheck/client dev server.
         (function () {
             var p = new URLSearchParams(location.search);
             var pk = p.get('pk');
-            var ru = p.get('rule');
+            var wf = p.get('workflow');
             var jo = p.get('job');
             if (pk) window.FILECHECK_ELEMENT_CONFIG.publishableKey = pk;
-            if (ru) window.FILECHECK_ELEMENT_CONFIG.ruleId         = ru;
+            if (wf) window.FILECHECK_ELEMENT_CONFIG.workflowId     = wf;
             if (jo) window.FILECHECK_ELEMENT_CONFIG.jobId          = jo;
             if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
                 window.FILECHECK_ELEMENT_CONFIG.iframeSrc = 'http://localhost:8010/';
