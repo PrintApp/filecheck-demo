@@ -179,7 +179,7 @@ body {
    a sane minimum height so the empty slot isn't 0px tall. */
 #fc-inline {
     height: auto;
-    max-height: 50vh;
+    max-height: 80vh;
 }
 
 #add-to-cart:disabled {
