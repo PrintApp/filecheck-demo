@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acme Print Co. — Order Report</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="logo">Acme Print Co.</div>
+        <nav>
+            <a href="/">Shop</a>
+            <a href="#">Orders</a>
+            <a href="#">Help</a>
+        </nav>
+    </header>
+
+    <main class="product" style="display:block;max-width:900px;">
+        <p class="breadcrumb">Orders / Preflight Report</p>
+        <h1>Your file check report</h1>
+        <p class="copy">
+            Read-only report for a completed job, rendered by the Filecheck
+            <code>report</code> element. Pass <code>?job=&lt;jobId&gt;</code> (and
+            optionally <code>?token=&lt;readToken&gt;</code>, <code>?pk=&lt;key&gt;</code>,
+            <code>?nodl=1</code> to gate downloads).
+        </p>
+
+        <!-- The report element mounts its own iframe here. -->
+        <div id="fc-report"></div>
+    </main>
+
+    <!--
+      Load the element bundle synchronously so `Filecheck` is defined before the
+      inline integration below runs. In production a tenant would just paste the
+      <script> tag; here the demo dev server serves the freshly built bundle.
+    -->
+    <script src="/element/filecheck.js"></script>
+    <script>
+        (function () {
+            var p     = new URLSearchParams(location.search);
+            var pk    = p.get('pk')    || 'pk_test_demo';
+            var jobId = p.get('job')   || '';
+            var token = p.get('token') || undefined;
+            var canDownload = p.get('nodl') !== '1';
+
+            var opts = {};
+            // Local-dev only: point the report iframe at the @filecheck/client
+            // dev server. The report element swaps in report.html for us.
+            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                opts.iframeSrc = 'http://localhost:8010/';
+            }
+
+            var fc = Filecheck(pk, opts);
+            var report = fc.elements.create('report', {
+                jobId: jobId,
+                token: token,
+                canDownload: canDownload,
+                presentation: 'inline',
+            });
+
+            report.on('ready',    function ()  { console.log('[demo] report ready'); });
+            report.on('error',    function (e) { console.warn('[demo] report error', e); });
+            report.on('download', function (e) {
+                // Host decides what to do. When canDownload is false the report
+                // performs no download itself and relies on this event.
+                console.log('[demo] download requested', e);
+                if (!canDownload) alert('Download gated — host would prompt signup for file ' + e.fileId);
+            });
+
+            report.mount('#fc-report');
+        })();
+    </script>
+</body>
+</html>
