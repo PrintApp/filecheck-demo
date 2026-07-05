@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acme Print Co. — Custom Business Cards</title>
     <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="icon" type="image/png" href="/icon.png" />
 
     <!--
       Production tenants paste exactly these two lines. In production the
@@ -20,7 +21,7 @@
         // Lambda@Edge in front of CloudFront, so the customer's page
         // only ships the <script> tag below.
         window.FILECHECK_ELEMENT_CONFIG = {
-            publishableKey:        'pk_test_demo',
+            publishableKey:        'pk_01KRX2E9SGXZCAXR7QZ2TW00YM',
             presentation:          'inline',
             mountSelector:         '#fc-inline',
             moveMountBefore:       '',
@@ -30,6 +31,7 @@
             customJs:              '',
             customCss:             '',
             customCss:             '',
+            workflowId:             'wf_01KVN318C37QWSAFTD19VXS2X1',
         };
         // Local-dev only: forward ?pk=… / ?workflow=… overrides and point
         // the iframe at the @filecheck/client dev server.
@@ -46,7 +48,7 @@
             }
         })();
     </script>
-    <script async src="/element/filecheck.js"></script>
+    <script async src="%VITE_ELEMENT_SRC%"></script>
 </head>
 <body>
     <header class="site-header">

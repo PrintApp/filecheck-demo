@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acme Print Co. — Order Report</title>
     <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="icon" type="image/png" href="/icon.png" />
 </head>
 <body>
     <header class="site-header">
@@ -35,7 +36,7 @@
       inline integration below runs. In production a tenant would just paste the
       <script> tag; here the demo dev server serves the freshly built bundle.
     -->
-    <script src="/element/filecheck.js"></script>
+    <script src="%VITE_ELEMENT_SRC%"></script>
     <script>
         (function () {
             var p     = new URLSearchParams(location.search);

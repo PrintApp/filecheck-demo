@@ -61,11 +61,13 @@
         <h1>Free-tool recipe</h1>
         <p class="copy">
             List-mode intake (<code>ui.resultsDisplay: 'list'</code>) on the left,
-            file-scoped report on the right. Upload one or more files: the first
-            terminal file auto-selects; clicking a row switches the report via
-            <code>report.update({ fileId })</code>. Pass
-            <code>?pk=&lt;key&gt;&amp;wf=&lt;workflowId&gt;</code>
-            (and <code>?nodl=1</code> to gate downloads).
+            data-mode report on the right. Upload one or more files: the first
+            terminal file auto-selects; clicking a row switches the report.
+            Pass <code>?pk=&lt;key&gt;&amp;wf=&lt;workflowId&gt;</code>
+            (and <code>?nodl=1</code> to gate downloads) — or
+            <code>?inline=1</code> to run a <strong>transient inline workflow</strong>
+            with <code>preview: true</code> instead of a saved one (acceptance
+            test for the backend previewWorkflow contract, backend-skill.md §15).
             This page is the reference the filecheck.io/tools pages mirror.
         </p>
 
@@ -82,13 +84,66 @@
         </div>
     </main>
 
-    <script src="/element/filecheck.js"></script>
+    <script src="%VITE_ELEMENT_SRC%"></script>
     <script>
         (function () {
             var p  = new URLSearchParams(location.search);
             var pk = p.get('pk') || 'pk_test_demo';
             var wf = p.get('wf') || 'wf_demo_preflight';
             var canDownload = p.get('nodl') !== '1';
+            var inline = p.get('inline') === '1';
+
+            /* Transient inline workflow (?inline=1): the whole check travels
+               with the page — the profile body rides RAW at its point of use
+               (accept.preflight.profile; never a made-up profileId — the
+               pipeline resolves ids against the Library, and null means
+               "run every check"). Validated server-side as `previewWorkflow`;
+               jobs are preview-tagged and short-retention. */
+            var INLINE_PROFILE = {
+                id: 'prof_demo_inline',
+                schemaVersion: 1,
+                description: 'Inline print-ready checks',
+                sections: {
+                    geometry: { id: 'geometry', enabled: true, rules: {
+                        'geom.bleed.required': { id: 'geom.bleed.required', enabled: true, severity: 'autofix', autofixStrategy: 'add-bleed', target: { required_mm: 3, tolerance_mm: 0.2, sides: ['all'], fill: 'none' } },
+                    } },
+                    color: { id: 'color', enabled: true, rules: {
+                        'color.mode': { id: 'color.mode', enabled: true, severity: 'autofix', target: { allowed: ['cmyk'], convertSpecialSpaces: true, preserve: [] } },
+                    } },
+                },
+            };
+            var INLINE_WORKFLOW = {
+                schemaVersion: 1,
+                title: 'Freetool demo — inline preflight',
+                trigger: 'on_accept',
+                intake: { ruleId: null, onError: 'halt', enabled: true },
+                streams: [],
+                merge: { mode: 'none', config: {}, onError: 'halt', enabled: true },
+                finalize: [],
+                proofing: { enabled: false, type: 'basic', timing: 'after_intake', requireApproval: false, config: {} },
+                optionSet: { enabled: false, title: '', description: '', fields: [], config: {} },
+                delivery: { enabled: false, destinationIds: [] },
+                enabled: true,
+                ui: {},
+                rule: {
+                    description: 'Freetool demo inline rule',
+                    cardinality: { min: 1, max: 4, slots: [] },
+                    accepts: [{
+                        kind: 'pdf',
+                        mimeTypes: ['application/pdf'],
+                        extensions: ['pdf'],
+                        maxSize: 30000000,
+                        convertToPdf: false,
+                        preflight: { enabled: true, profile: INLINE_PROFILE },
+                        autofix: { enabled: true },
+                        repreflight: { enabled: true },
+                        onFail: 'accept_with_warnings',
+                    }],
+                    rejectUnknownTypes: true,
+                    enabled: true,
+                    ui: {},
+                },
+            };
 
             var opts = {};
             // Local-dev only: point both iframes at the @filecheck/client dev
@@ -100,13 +155,25 @@
             var fc = Filecheck(pk, opts);
 
             /* ── Intake, list mode ─────────────────────────────────────── */
-            var intake = fc.elements.create('intake', {
-                workflowId:   wf,
+            var intakeOpts = {
                 presentation: 'inline',
                 ui: {
                     showHeader:     false,
                     resultsDisplay: 'list',   // compact selectable file queue
                 },
+            };
+            if (inline) {
+                intakeOpts.workflow = INLINE_WORKFLOW;  // validated as previewWorkflow
+                intakeOpts.preview  = true;             // transient job, short retention
+            } else {
+                intakeOpts.workflowId = wf;
+            }
+            var intake = fc.elements.create('intake', intakeOpts);
+            intake.on('error', function (e) {
+                console.warn('[freetool] intake error', e);
+                if (e.code === 'validate_failed') {
+                    alert('Validate rejected the inline workflow — backend previewWorkflow support (backend-skill.md §15) not deployed yet?');
+                }
             });
             intake.on('status', function (e) {
                 console.log('[freetool] status', e.status, 'canProceed:', e.canProceed);
