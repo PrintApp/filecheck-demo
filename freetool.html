@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filecheck — Free Tool Recipe (list-mode intake + file-scoped report)</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <style>
+        /* Two-pane free-tool layout: file queue left, report right. */
+        .tool {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 0 32px;
+        }
+        .tool-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+            gap: 24px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .tool-grid { grid-template-columns: 1fr; }
+        }
+        .pane {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--bg);
+            overflow: hidden;
+        }
+        .pane h2 {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 0;
+            padding: 16px 20px 0;
+        }
+        .pane .pad { padding: 16px 20px 20px; }
+        #fc-report-empty {
+            margin: 16px 20px 20px;
+            padding: 40px 20px;
+            border: 2px dashed var(--line);
+            border-radius: var(--radius);
+            color: var(--muted);
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="logo">Filecheck Free Tool</div>
+        <nav>
+            <a href="/">Intake demo</a>
+            <a href="/report.html">Report demo</a>
+        </nav>
+    </header>
+
+    <main class="tool">
+        <h1>Free-tool recipe</h1>
+        <p class="copy">
+            List-mode intake (<code>ui.resultsDisplay: 'list'</code>) on the left,
+            file-scoped report on the right. Upload one or more files: the first
+            terminal file auto-selects; clicking a row switches the report via
+            <code>report.update({ fileId })</code>. Pass
+            <code>?pk=&lt;key&gt;&amp;wf=&lt;workflowId&gt;</code>
+            (and <code>?nodl=1</code> to gate downloads).
+            This page is the reference the filecheck.io/tools pages mirror.
+        </p>
+
+        <div class="tool-grid">
+            <section class="pane">
+                <h2>Your files</h2>
+                <div class="pad"><div id="fc-intake"></div></div>
+            </section>
+            <section class="pane">
+                <h2>Report</h2>
+                <div id="fc-report-empty">The selected file's report appears here.</div>
+                <div id="fc-report"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="/element/filecheck.js"></script>
+    <script>
+        (function () {
+            var p  = new URLSearchParams(location.search);
+            var pk = p.get('pk') || 'pk_test_demo';
+            var wf = p.get('wf') || 'wf_demo_preflight';
+            var canDownload = p.get('nodl') !== '1';
+
+            var opts = {};
+            // Local-dev only: point both iframes at the @filecheck/client dev
+            // server. The report element swaps in report.html by itself.
+            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                opts.iframeSrc = 'http://localhost:8010/';
+            }
+
+            var fc = Filecheck(pk, opts);
+
+            /* ── Intake, list mode ─────────────────────────────────────── */
+            var intake = fc.elements.create('intake', {
+                workflowId:   wf,
+                presentation: 'inline',
+                ui: {
+                    showHeader:     false,
+                    resultsDisplay: 'list',   // compact selectable file queue
+                },
+            });
+            intake.on('status', function (e) {
+                console.log('[freetool] status', e.status, 'canProceed:', e.canProceed);
+            });
+            intake.mount('#fc-intake');
+
+            /* ── Report, data mode: rendered from the fileSelect handoff ──
+               No second socket, no job fetch — the intake already holds the
+               report body and delivers it in `e.report`, including a
+               presigned `downloadUrl` so the viewer can serve the fixed
+               file itself. The toolbar's "Download report" prints to PDF.
+               (Fetch mode — create('report', { jobId, fileId, token }) —
+               remains available for post-purchase pages; see report.html.) */
+            var report = null;
+
+            intake.on('fileSelect', function (e) {
+                console.log('[freetool] fileSelect', e);
+                if (!e.report) return;
+
+                if (!report) {
+                    document.getElementById('fc-report-empty').style.display = 'none';
+                    report = fc.elements.create('report', {
+                        data:        [e.report],
+                        canDownload: canDownload,
+                        presentation: 'inline',
+                    });
+                    report.on('download', function (d) {
+                        // Viewer downloads via the entry's presigned URL;
+                        // this event is for host tracking/analytics.
+                        console.log('[freetool] download requested', d);
+                    });
+                    report.mount('#fc-report');
+                    return;
+                }
+
+                report.update({ data: [e.report] });
+            });
+        })();
+    </script>
+</body>
+</html>
