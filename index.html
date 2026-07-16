@@ -11,13 +11,13 @@
       Production tenants paste exactly these two lines. In production the
       `FILECHECK_ELEMENT_CONFIG` is prepended to the bundle itself by the
       per-tenant CDN edge function (URL like
-      https://cdn.filecheck.io/elements/<publishableKey>/filecheck.js), so
+      https://cdn.filecheck.io/element/<publishableKey>/filecheck.js), so
       a real customer ships only the <script> tag. We inline it here to
       simulate that injection for local development.
     -->
     <script>
         // Simulated CDN-injected config. In production this whole object
-        // is prepended to /elements/<publishableKey>/filecheck.js by a
+        // is prepended to /element/<publishableKey>/filecheck.js by a
         // Lambda@Edge in front of CloudFront, so the customer's page
         // only ships the <script> tag below.
         window.FILECHECK_ELEMENT_CONFIG = {
