@@ -37,6 +37,7 @@ body {
 }
 .site-header nav {
     display: flex;
+    align-items: center;
     gap: 24px;
     font-size: 14px;
 }
@@ -48,6 +49,24 @@ body {
 .site-header .cart {
     font-weight: 600;
 }
+.site-header nav a.nav-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.site-header nav a.nav-cta-red  { background: #f91b25; }
+.site-header nav a.nav-cta-dark { background: #14161c; }
+.site-header nav a.nav-cta:hover       { color: #fff; opacity: 0.88; }
+.site-header nav a.nav-cta-red:hover   { background: #d8151e; }
+.site-header nav a.nav-cta-dark:hover  { background: #2a2e38; }
 
 /* ─── product layout ─── */
 .product {
