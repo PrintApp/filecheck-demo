@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acme Signs — PVC Banner</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+
+    <!--
+      Two-way connector demo.
+
+      Mirrors the shape of a real large-format product page: the customer types
+      a width and a height, picks the unit from a dropdown, and chooses a
+      finish — and the price is computed from all of it. Nothing here is
+      Filecheck-specific markup; it is deliberately the sort of theme a printer
+      already has.
+
+      READ  entries pull those selections in, so the uploaded artwork is checked
+            against the banner the customer actually configured.
+      WRITE entries push the file's measured trim size back out, so the price
+            recalculates from what was really uploaded.
+
+      Add ?fcdebug=1 to see exactly what Filecheck read off this page.
+    -->
+    <script async src="%VITE_ELEMENT_SRC%"></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="logo">Acme Signs</div>
+        <nav>
+            <a href="#">Shop</a>
+            <a href="#">Templates</a>
+        </nav>
+    </header>
+
+    <main class="product">
+        <section class="product-media">
+            <div class="product-image" aria-hidden="true">PVC Banner</div>
+        </section>
+
+        <section class="product-detail">
+            <h1>Outdoor PVC Banner</h1>
+            <p class="product-blurb">
+                510gsm PVC, hemmed and eyeletted as standard. Enter your finished
+                size below.
+            </p>
+
+            <div class="option-row">
+                <label class="option">
+                    <span>Width</span>
+                    <input id="banner-width" name="width" type="number" min="100" step="1" value="300" />
+                </label>
+                <span class="option-x" aria-hidden="true">×</span>
+                <label class="option">
+                    <span>Height</span>
+                    <input id="banner-height" name="height" type="number" min="100" step="1" value="100" />
+                </label>
+                <label class="option">
+                    <span>Units</span>
+                    <select id="banner-unit" name="unit">
+                        <option value="mm">MM</option>
+                        <option value="cm" selected>CM</option>
+                        <option value="m">Meters</option>
+                        <option value="in">Inches</option>
+                        <option value="ft">Feet</option>
+                    </select>
+                </label>
+            </div>
+
+            <fieldset class="option-fieldset">
+                <legend>Finishing</legend>
+                <label><input type="radio" name="finishing" value="hem_eyelets" checked /> Hem and eyelets</label>
+                <label><input type="radio" name="finishing" value="hem" /> Hem only</label>
+                <label><input type="radio" name="finishing" value="trimmed" /> Trimmed to size</label>
+            </fieldset>
+
+            <p class="price">Price: <strong id="price">£0.00</strong></p>
+
+            <div id="fc-slot"></div>
+
+            <button id="add-to-cart" class="cart-button" disabled>Add to cart</button>
+
+            <!-- Verification aid: every probe and price recalculation is logged
+                 here, so a debounce or a feedback loop is visible rather than
+                 inferred. Not part of the integration. -->
+            <section class="probe-log">
+                <h2>Event log <button id="clear-log" type="button">clear</button></h2>
+                <ol id="log"></ol>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            /* ---------- the store's own price logic (nothing to do with us) ---- */
+            const UNIT_MM = { mm: 1, cm: 10, m: 1000, in: 25.4, ft: 304.8 };
+            const FINISH_UPLIFT = { hem_eyelets: 1.25, hem: 1.1, trimmed: 1 };
+            let priceRuns = 0;
+
+            const log = (msg, kind) => {
+                const li = document.createElement('li');
+                li.textContent = `${String(++log.n).padStart(3, '0')}  ${msg}`;
+                if (kind) li.className = kind;
+                document.getElementById('log').prepend(li);
+            };
+            log.n = 0;
+
+            function recalcPrice() {
+                priceRuns++;
+                const f = UNIT_MM[document.getElementById('banner-unit').value] || 1;
+                const w = (Number(document.getElementById('banner-width').value) || 0) * f / 1000;
+                const h = (Number(document.getElementById('banner-height').value) || 0) * f / 1000;
+                const finish = document.querySelector('input[name=finishing]:checked')?.value;
+                const total = w * h * 18 * (FINISH_UPLIFT[finish] ?? 1);
+                document.getElementById('price').textContent = '£' + total.toFixed(2);
+                log(`price recalculated → £${total.toFixed(2)} (${w}m × ${h}m)`, 'price');
+            }
+
+            // The theme listens for plain input/change, exactly as a real one does —
+            // including the events our own write entries dispatch.
+            for (const sel of ['#banner-width', '#banner-height', '#banner-unit']) {
+                document.querySelector(sel).addEventListener('input', recalcPrice);
+                document.querySelector(sel).addEventListener('change', recalcPrice);
+            }
+            for (const el of document.querySelectorAll('input[name=finishing]')) {
+                el.addEventListener('change', recalcPrice);
+            }
+            document.getElementById('clear-log').addEventListener('click', () => {
+                document.getElementById('log').innerHTML = '';
+                log.n = 0;
+            });
+            recalcPrice();
+
+            /* ---------- the Filecheck integration ------------------------------ */
+            const CONNECTOR = {
+                title: 'PVC banner sync',
+                entries: [
+                    // READ — what the customer configured drives the rule.
+                    {
+                        id: 'r-width', type: 'read', field: 'width',
+                        customSelector: '#banner-width',
+                        // The unit is itself a control the customer changes, so the
+                        // conversion factor is not known until probe time.
+                        convertFrom: { fromSelector: '#banner-unit', map: { mm: 'mm', cm: 'cm', m: 'm', in: 'in', ft: 'ft' } },
+                    },
+                    {
+                        id: 'r-height', type: 'read', field: 'height',
+                        customSelector: '#banner-height',
+                        convertFrom: { fromSelector: '#banner-unit', map: { mm: 'mm', cm: 'cm', m: 'm', in: 'in', ft: 'ft' } },
+                    },
+                    {
+                        id: 'r-finish', type: 'read', field: 'finishing',
+                        customSelector: 'input[name=finishing]:checked',
+                        // A hem needs far more allowance than a trimmed edge — this
+                        // is the printer's own table, not a number the page carries.
+                        map: {
+                            hem_eyelets: { bleed: { required_mm: 25 }, safety: { min_mm: 20 } },
+                            hem:         { bleed: { required_mm: 15 }, safety: { min_mm: 15 } },
+                            trimmed:     { bleed: { required_mm: 3  }, safety: { min_mm: 5  } },
+                        },
+                    },
+
+                    // WRITE — the file's measured trim size flows back to the page,
+                    // so the price reflects the artwork that was actually supplied.
+                    { id: 'w-width',  type: 'write', source: 'width',  control: 'width',
+                      customSelector: '#banner-width',  convertTo: 'cm', decimals: 1 },
+                    { id: 'w-height', type: 'write', source: 'height', control: 'height',
+                      customSelector: '#banner-height', convertTo: 'cm', decimals: 1 },
+                ],
+            };
+
+            const params = new URLSearchParams(location.search);
+            const PK       = params.get('pk')       || 'pk_01KRX2E9SGXZCAXR7QZ2TW00YM';
+            const WORKFLOW = params.get('workflow') || 'wf_01KVN318C37QWSAFTD19VXS2X1';
+
+            function whenReady(cb) {
+                const started = Date.now();
+                (function tick() {
+                    if (window.Filecheck) return cb();
+                    if (Date.now() - started > 10000) return log('Filecheck failed to load', 'bad');
+                    setTimeout(tick, 50);
+                })();
+            }
+
+            whenReady(function () {
+                const fc = window.Filecheck(PK, {
+                    iframeSrc: /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+                        ? 'http://localhost:8010/'
+                        : undefined,
+                });
+
+                const intake = fc.elements.create('intake', {
+                    workflowId: WORKFLOW,
+                    connector:  CONNECTOR,
+                    onProbe(report, context) {
+                        const hits = report.filter(r => r.matched).length;
+                        log(`probe → ${hits}/${report.length} matched  ${JSON.stringify(context)}`, 'probe');
+                    },
+                    onConnectorApply(results) {
+                        const applied = results.filter(r => r.applied).length;
+                        if (applied) log(`wrote ${applied} value(s) back to the page`, 'write');
+                    },
+                });
+
+                intake.on('context', ctx => log(`context changed → ${JSON.stringify(ctx)}`, 'ctx'));
+                intake.on('status',  s   => {
+                    document.getElementById('add-to-cart').disabled = !s.canProceed;
+                });
+                intake.on('error',   e   => log(`element error: ${e.code}`, 'bad'));
+
+                intake.mount('#fc-slot');
+                window.__intake = intake;   // handy from the console
+                log('element mounted');
+            });
+        })();
+    </script>
+
+    <style>
+        .product { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 2.5rem; max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
+        .product-image { aspect-ratio: 4/3; display: grid; place-items: center; background: #e8edf3; border-radius: 12px; color: #64748b; font-weight: 600; }
+        .product-blurb { color: #475569; }
+        .option-row { display: flex; align-items: flex-end; gap: .75rem; flex-wrap: wrap; margin: 1.25rem 0; }
+        .option { display: flex; flex-direction: column; gap: .35rem; font-size: .82rem; color: #475569; }
+        .option input, .option select { padding: .5rem .6rem; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; min-width: 6.5rem; }
+        .option-x { padding-bottom: .6rem; color: #94a3b8; }
+        .option-fieldset { border: 1px solid #e2e8f0; border-radius: 10px; padding: .75rem 1rem 1rem; margin: 0 0 1.25rem; }
+        .option-fieldset legend { font-size: .82rem; color: #475569; padding: 0 .35rem; }
+        .option-fieldset label { display: block; padding: .2rem 0; font-size: .9rem; }
+        .price { font-size: 1.1rem; margin: 0 0 1.25rem; }
+        .cart-button { margin-top: 1rem; padding: .75rem 1.4rem; border: 0; border-radius: 8px; background: #0f172a; color: #fff; font-weight: 600; cursor: pointer; }
+        .cart-button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .probe-log { margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 1rem; }
+        .probe-log h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: #64748b; display: flex; justify-content: space-between; align-items: center; }
+        .probe-log button { font: inherit; font-size: .75rem; background: none; border: 1px solid #cbd5e1; border-radius: 5px; padding: .1rem .5rem; cursor: pointer; }
+        #log { list-style: none; margin: 0; padding: 0; max-height: 20rem; overflow: auto; font: 12px/1.6 ui-monospace, monospace; }
+        #log li { padding: .1rem 0; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        #log li.probe { color: #1d4ed8; }
+        #log li.write { color: #7c3aed; }
+        #log li.ctx   { color: #047857; font-weight: 600; }
+        #log li.price { color: #92400e; }
+        #log li.bad   { color: #b91c1c; }
+        @media (max-width: 860px) { .product { grid-template-columns: 1fr; } }
+    </style>
+</body>
+</html>
