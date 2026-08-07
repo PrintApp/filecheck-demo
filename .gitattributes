@@ -1,0 +1,15 @@
+# The sample files under public/samples/ are deliberately small and mostly
+# ASCII, so git's "is this binary?" heuristic (look for a NUL in the first 8k)
+# guesses wrong and classifies them as text. With core.autocrlf=true that
+# rewrites every LF to CRLF on checkout, which shifts the byte offsets a PDF's
+# xref table points at — a fresh clone on Windows gets files that no longer
+# open. Say it explicitly instead of relying on the guess.
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.tif   binary
+*.tiff  binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
