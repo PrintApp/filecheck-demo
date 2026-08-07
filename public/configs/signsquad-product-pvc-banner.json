@@ -1,0 +1,232 @@
+{
+    "id": "signsquad-product-pvc-banner",
+    "sourceUrl": "https://www.signsquad.co.uk/product/pvc-banner/",
+    "generatedAt": "2026-08-07T19:49:26.070Z",
+    "archetype": "custom-size",
+    "product": {
+        "title": "PVC Banner",
+        "blurb": "A custom-sized PVC banner printed to the customer's specified dimensions with a choice of finishing options."
+    },
+    "unit": "mm",
+    "controls": [
+        {
+            "key": "width",
+            "label": "Width",
+            "type": "number",
+            "value": 1200,
+            "min": null,
+            "max": null
+        },
+        {
+            "key": "height",
+            "label": "Height",
+            "type": "number",
+            "value": 600,
+            "min": null,
+            "max": null
+        },
+        {
+            "key": "unit",
+            "label": "Units",
+            "type": "select",
+            "value": "mm",
+            "options": [
+                {
+                    "value": "mm",
+                    "label": "mm"
+                },
+                {
+                    "value": "cm",
+                    "label": "cm"
+                },
+                {
+                    "value": "m",
+                    "label": "m"
+                },
+                {
+                    "value": "in",
+                    "label": "in"
+                },
+                {
+                    "value": "ft",
+                    "label": "ft"
+                }
+            ]
+        },
+        {
+            "key": "finishing",
+            "label": "Finishing Options",
+            "type": "radio",
+            "value": "hem_and_eyelets",
+            "options": [
+                {
+                    "value": "hem_and_eyelets",
+                    "label": "Hem and Eyelets"
+                },
+                {
+                    "value": "hem_only",
+                    "label": "Hem Only"
+                },
+                {
+                    "value": "trimmed_to_size",
+                    "label": "Trimmed to Size"
+                }
+            ]
+        }
+    ],
+    "connector": {
+        "title": "PVC Banner sync",
+        "entries": [
+            {
+                "id": "r-width",
+                "type": "read",
+                "field": "width",
+                "customSelector": "#fc-width",
+                "convertFrom": {
+                    "fromSelector": "#fc-unit",
+                    "map": {
+                        "mm": "mm",
+                        "cm": "cm",
+                        "m": "m",
+                        "in": "in",
+                        "ft": "ft"
+                    }
+                }
+            },
+            {
+                "id": "r-height",
+                "type": "read",
+                "field": "height",
+                "customSelector": "#fc-height",
+                "convertFrom": {
+                    "fromSelector": "#fc-unit",
+                    "map": {
+                        "mm": "mm",
+                        "cm": "cm",
+                        "m": "m",
+                        "in": "in",
+                        "ft": "ft"
+                    }
+                }
+            },
+            {
+                "id": "r-finishing",
+                "type": "read",
+                "field": "finishing",
+                "customSelector": "[name=\"finishing\"]:checked, #fc-finishing",
+                "map": {
+                    "hem_and_eyelets": {
+                        "bleed": {
+                            "required_mm": 25
+                        },
+                        "safety": {
+                            "min_mm": 20
+                        }
+                    },
+                    "hem_only": {
+                        "bleed": {
+                            "required_mm": 25
+                        },
+                        "safety": {
+                            "min_mm": 20
+                        }
+                    },
+                    "trimmed_to_size": {
+                        "bleed": {
+                            "required_mm": 3
+                        },
+                        "safety": {
+                            "min_mm": 5
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "profile": {
+        "id": "prof_demo_signsquad-product-pvc-banner",
+        "schemaVersion": 1,
+        "description": "PVC Banner checks",
+        "sections": {
+            "geometry": {
+                "id": "geometry",
+                "enabled": true,
+                "rules": {
+                    "geom.page_size": {
+                        "id": "geom.page_size",
+                        "enabled": true,
+                        "severity": "reject",
+                        "target": {
+                            "allowed": [
+                                {
+                                    "width_mm": 1200,
+                                    "height_mm": 600
+                                }
+                            ],
+                            "tolerance_mm": 2,
+                            "autofix_within_percent": 0
+                        }
+                    },
+                    "geom.bleed.required": {
+                        "id": "geom.bleed.required",
+                        "enabled": true,
+                        "severity": "warn",
+                        "target": {
+                            "required_mm": 25,
+                            "tolerance_mm": 1,
+                            "sides": [
+                                "all"
+                            ],
+                            "fill": "none"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "fileKinds": [
+        "pdf",
+        "raster",
+        "vector"
+    ],
+    "evidence": [
+        {
+            "field": "sizeUnit",
+            "quote": "Feet Inches Meters CM MM"
+        },
+        {
+            "field": "unitSwitchable",
+            "quote": "Feet Inches Meters CM MM"
+        },
+        {
+            "field": "fileKinds",
+            "quote": "Accepted formats: PDF, JPG, PNG, AI, PSD"
+        },
+        {
+            "field": "options.finishing",
+            "quote": "Hem and Eyelets Hem Only Trimmed to Size"
+        }
+    ],
+    "assumptions": [
+        {
+            "field": "finishing.hem_and_eyelets",
+            "value": "25 mm bleed, 20 mm safe margin",
+            "note": "a hem folds about 25 mm of artwork back"
+        },
+        {
+            "field": "finishing.hem_only",
+            "value": "25 mm bleed, 20 mm safe margin",
+            "note": "a hem folds about 25 mm of artwork back"
+        },
+        {
+            "field": "finishing.trimmed_to_size",
+            "value": "3 mm bleed, 5 mm safe margin",
+            "note": "cut to size — standard trim bleed"
+        },
+        {
+            "field": "bleed",
+            "value": "25 mm",
+            "note": "the usual allowance for this finish, since the page states none"
+        }
+    ]
+}
