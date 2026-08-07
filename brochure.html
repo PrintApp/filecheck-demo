@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acme Print Co. — Folded Brochure</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <script src="/demo.js"></script>
+    <script src="%VITE_ELEMENT_SRC%"></script>
+</head>
+<body>
+    <nav class="demo-bar">
+        <a href="/">← All demos</a>
+        <a href="/business-cards.html">Business cards</a>
+        <a href="/pvc-banner.html">PVC banner</a>
+        <a href="/brochure.html">Brochure</a>
+        <a href="/freetool.html">Free tool</a>
+        <a href="/report.html">Report</a>
+    </nav>
+
+    <header class="site-header">
+        <div class="logo">Acme Print Co.</div>
+        <nav>
+            <a class="nav-cta nav-cta-red" target="_blank" href="https://admin.filecheck.io/register">Get Filecheck <span aria-hidden="true">→</span></a>
+            <a href="#">Shop</a>
+            <a href="#">Help</a>
+            <a href="#" class="cart">Cart (0)</a>
+        </nav>
+    </header>
+
+    <main class="product">
+        <section class="product-gallery">
+            <div class="product-swatch product-swatch-brochure" aria-hidden="true">Brochure</div>
+        </section>
+
+        <section class="product-details">
+            <p class="breadcrumb">Print / Brochures</p>
+            <h1>Folded Brochure</h1>
+            <p class="rating">★★★★☆ <span>(126 reviews)</span></p>
+
+            <p class="copy">
+                170 gsm silk, folded and trimmed. Supply one PDF with every page in
+                order — we'll check it has the right number of pages for the fold
+                you picked.
+            </p>
+
+            <div class="options">
+                <label>Pages
+                    <select id="brochure-pages" name="pages">
+                        <option value="4" selected>4 pages — single fold</option>
+                        <option value="6">6 pages — roll fold</option>
+                        <option value="8">8 pages — gate fold</option>
+                        <option value="12">12 pages — booklet</option>
+                    </select>
+                </label>
+                <label>Size
+                    <select id="brochure-size" name="size">
+                        <option value="A4 (210 × 297 mm)" selected>A4 (210 × 297 mm)</option>
+                        <option value="A5 (148 × 210 mm)">A5 (148 × 210 mm)</option>
+                        <option value="DL (99 × 210 mm)">DL (99 × 210 mm)</option>
+                    </select>
+                </label>
+                <label>Quantity
+                    <select id="brochure-qty" name="qty">
+                        <option value="250">250</option>
+                        <option value="500" selected>500</option>
+                        <option value="1000">1,000</option>
+                    </select>
+                </label>
+            </div>
+
+            <p class="price"><span class="price-now" id="price">£0.00</span> <span class="price-unit">inc. VAT</span></p>
+
+            <div class="upload-section">
+                <div id="fc-slot"></div>
+            </div>
+
+            <div class="cta-row">
+                <button id="add-to-cart" class="btn-primary" type="button" disabled>Add to Cart</button>
+            </div>
+
+            <p class="hint">
+                Try it: upload a PDF that passes at 4 pages, then switch the fold to
+                8. The same file is now wrong — and Filecheck says so without
+                re-reading the file.
+                Add <code>?fcdebug=1</code> to see what's read off this page.
+            </p>
+
+            <details class="integration">
+                <summary>What the shop actually added</summary>
+                <p>
+                    Two read entries. The page count comes from a dropdown of plain
+                    numbers; the size dropdown holds its label and its dimensions in
+                    one string, so a pattern pulls both out at once.
+                </p>
+<pre><code>connector: {
+  entries: [
+    { type: 'read', field: 'pages', customSelector: '#brochure-pages' },
+
+    { type: 'read', field: 'size', customSelector: '#brochure-size',
+      pattern: '(?&lt;width&gt;[\\d.]+)\\s*[x×]\\s*(?&lt;height&gt;[\\d.]+)',
+      convertFrom: 'mm' },
+  ],
+}</code></pre>
+                <p>
+                    Named groups <code>width</code> and <code>height</code> fill both
+                    dimensions from one control. If the pattern ever stops matching,
+                    the entry contributes nothing rather than guessing — the saved
+                    rule applies instead.
+                </p>
+            </details>
+        </section>
+    </main>
+
+    <script>
+        /* ─────────── the shop's own pricing. Not part of Filecheck. ─────────── */
+        (function () {
+            // Size affects the sheet cost, quantity the run length — every
+            // control the customer can touch has to move the price, or the
+            // page doesn't behave like a real shop.
+            var SIZE_FACTOR = { 'A4 (210 × 297 mm)': 1, 'A5 (148 × 210 mm)': 0.62, 'DL (99 × 210 mm)': 0.48 };
+
+            function recalc() {
+                var pages = Number(document.getElementById('brochure-pages').value) || 4;
+                var size  = SIZE_FACTOR[document.getElementById('brochure-size').value] || 1;
+                var qty   = Number(document.getElementById('brochure-qty').value) || 500;
+                var total = (38 + pages * 6.5) * size * (qty / 500);
+                document.getElementById('price').textContent = '£' + total.toFixed(2);
+            }
+            ['brochure-pages', 'brochure-size', 'brochure-qty'].forEach(function (id) {
+                document.getElementById(id).addEventListener('change', recalc);
+            });
+            recalc();
+        })();
+    </script>
+
+    <script>
+    /* ══════════════════ the Filecheck integration ══════════════════ */
+    (function () {
+        var CONNECTOR = {
+            title: 'Brochure sync',
+            entries: [
+                // A plain number in a dropdown → the exact page count required.
+                { id: 'r-pages', type: 'read', field: 'pages',
+                  customSelector: '#brochure-pages' },
+
+                // One control holding "A4 (210 × 297 mm)" → both dimensions.
+                { id: 'r-size', type: 'read', field: 'size',
+                  customSelector: '#brochure-size',
+                  pattern: '(?<width>[\\d.]+)\\s*[x×]\\s*(?<height>[\\d.]+)',
+                  convertFrom: 'mm' },
+            ],
+        };
+
+        /* Defaults only — the page count and size below are both overwritten
+           at runtime by whatever the customer picked. */
+        var PROFILE = {
+            id: 'prof_demo_brochure',
+            schemaVersion: 1,
+            description: 'Folded brochure checks',
+            sections: {
+                geometry: { id: 'geometry', enabled: true, rules: {
+                    'geom.page_count': { id: 'geom.page_count', enabled: true, severity: 'reject',
+                        target: { min: 4, max: 4, allowed: [] } },
+                    'geom.page_size': { id: 'geom.page_size', enabled: true, severity: 'reject',
+                        target: { allowed: [{ width_mm: 210, height_mm: 297 }], tolerance_mm: 1, autofix_within_percent: 0 } },
+                    'geom.consistent_page_sizes': { id: 'geom.consistent_page_sizes', enabled: true, severity: 'reject' },
+                } },
+            },
+        };
+
+        var WORKFLOW = {
+            schemaVersion: 1,
+            title: 'Brochure demo — dynamic page count',
+            // Deferred trigger on purpose. `on_accept` advances the job out of
+            // intake the moment it completes, which commits the file to
+            // production and correctly locks the queue row — hiding the
+            // findings and the replace button. A product page needs the
+            // customer to keep acting on their file, so the job parks at
+            // intake_done until an order is actually placed.
+            trigger: 'order_placed',
+            intake: { ruleId: null, onError: 'halt', enabled: true },
+            streams: [],
+            merge: { mode: 'none', config: {}, onError: 'halt', enabled: true },
+            finalize: [],
+            proofing: { enabled: false, type: 'basic', timing: 'after_intake', requireApproval: false, config: {} },
+            delivery: { enabled: false, destinationIds: [] },
+            enabled: true,
+            ui: {},
+            rule: {
+                description: 'Brochure demo inline rule',
+                cardinality: { min: 1, max: 1, slots: [] },
+                accepts: [{
+                    kind: 'pdf',
+                    mimeTypes: ['application/pdf'],
+                    extensions: ['pdf'],
+                    maxSize: 100000000,
+                    convertToPdf: false,
+                    preflight: { enabled: true, profile: PROFILE },
+                    onFail: 'reject',
+                }],
+                rejectUnknownTypes: true,
+                enabled: true,
+                ui: { title: 'Upload your brochure PDF' },
+            },
+        };
+
+        function whenReady(cb) {
+            var started = Date.now();
+            (function tick() {
+                if (window.Filecheck) return cb();
+                if (Date.now() - started > 10000) return console.error('[brochure] Filecheck failed to load');
+                setTimeout(tick, 50);
+            })();
+        }
+
+        whenReady(function () {
+            var fc = Filecheck(FCDemo.key(), FCDemo.options());
+
+            var intake = fc.elements.create('intake', {
+                workflow:  WORKFLOW,
+                preview:   FCDemo.preview,
+                connector: CONNECTOR,
+            });
+
+            intake.on('status', function (s) {
+                document.getElementById('add-to-cart').disabled = !s.canProceed;
+            });
+
+            intake.mount('#fc-slot');
+        });
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acme Signs — Outdoor PVC Banner</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <script src="/demo.js"></script>
+    <script src="%VITE_ELEMENT_SRC%"></script>
+</head>
+<body>
+    <nav class="demo-bar">
+        <a href="/">← All demos</a>
+        <a href="/business-cards.html">Business cards</a>
+        <a href="/pvc-banner.html">PVC banner</a>
+        <a href="/brochure.html">Brochure</a>
+        <a href="/freetool.html">Free tool</a>
+        <a href="/report.html">Report</a>
+    </nav>
+
+    <header class="site-header">
+        <div class="logo">Acme Signs</div>
+        <nav>
+            <a class="nav-cta nav-cta-red" target="_blank" href="https://admin.filecheck.io/register">Get Filecheck <span aria-hidden="true">→</span></a>
+            <a href="#">Shop</a>
+            <a href="#">Help</a>
+            <a href="#" class="cart">Cart (0)</a>
+        </nav>
+    </header>
+
+    <main class="product">
+        <section class="product-gallery">
+            <div class="product-swatch product-swatch-banner" aria-hidden="true">PVC Banner</div>
+        </section>
+
+        <section class="product-details">
+            <p class="breadcrumb">Large format / Banners</p>
+            <h1>Outdoor PVC Banner</h1>
+            <p class="rating">★★★★★ <span>(311 reviews)</span></p>
+
+            <p class="copy">
+                510 gsm PVC, weatherproof, printed edge to edge. Enter the finished
+                size you need — the price and the artwork check both follow it.
+            </p>
+
+            <!-- ── the shop's own controls. Nothing Filecheck-specific here ── -->
+            <div class="options options-inline">
+                <label>Width
+                    <input id="banner-width" name="width" type="number" min="10" step="1" value="300" />
+                </label>
+                <span class="options-x" aria-hidden="true">×</span>
+                <label>Height
+                    <input id="banner-height" name="height" type="number" min="10" step="1" value="100" />
+                </label>
+                <label>Units
+                    <select id="banner-unit" name="unit">
+                        <option value="mm">mm</option>
+                        <option value="cm" selected>cm</option>
+                        <option value="m">metres</option>
+                        <option value="in">inches</option>
+                        <option value="ft">feet</option>
+                    </select>
+                </label>
+            </div>
+
+            <fieldset class="options-fieldset">
+                <legend>Finishing</legend>
+                <label><input type="radio" name="finishing" value="hem_eyelets" checked /> Hem and eyelets <em>— needs 25 mm bleed</em></label>
+                <label><input type="radio" name="finishing" value="hem" /> Hem only <em>— needs 15 mm</em></label>
+                <label><input type="radio" name="finishing" value="trimmed" /> Trimmed to size <em>— needs 3 mm</em></label>
+            </fieldset>
+
+            <p class="price"><span class="price-now" id="price">£0.00</span> <span class="price-unit">inc. VAT</span></p>
+
+            <div class="upload-section">
+                <div id="fc-slot"></div>
+            </div>
+
+            <div class="cta-row">
+                <button id="add-to-cart" class="btn-primary" type="button" disabled>Add to Cart</button>
+            </div>
+
+            <p class="hint">
+                Try it: upload any PDF, then change the width. The check re-runs
+                against the new size without re-uploading anything.
+                Add <code>?fcdebug=1</code> to the URL to see exactly what Filecheck
+                reads off this page.
+            </p>
+
+            <details class="integration">
+                <summary>What the shop actually added</summary>
+                <p>
+                    A connector describes where the size lives on this page. Read
+                    entries pull the customer's choices in; write entries push the
+                    file's measured size back out so the price updates.
+                </p>
+<pre><code>connector: {
+  entries: [
+    { type: 'read', field: 'width',  customSelector: '#banner-width',
+      convertFrom: { fromSelector: '#banner-unit' } },
+    { type: 'read', field: 'height', customSelector: '#banner-height',
+      convertFrom: { fromSelector: '#banner-unit' } },
+    { type: 'read', field: 'finishing',
+      customSelector: 'input[name=finishing]:checked',
+      map: { hem_eyelets: { bleed: { required_mm: 25 } },
+             trimmed:     { bleed: { required_mm: 3  } } } },
+
+    { type: 'write', source: 'width',  control: 'width',
+      customSelector: '#banner-width', convertTo: 'cm', decimals: 1 },
+  ],
+}</code></pre>
+                <p>
+                    A merchant builds this in the Filecheck admin — the selectors are
+                    filled in automatically for common shop themes.
+                </p>
+            </details>
+        </section>
+    </main>
+
+    <script>
+        /* ─────────── the shop's own pricing. Not part of Filecheck. ─────────── */
+        (function () {
+            var UNIT_MM = { mm: 1, cm: 10, m: 1000, in: 25.4, ft: 304.8 };
+            var UPLIFT  = { hem_eyelets: 1.25, hem: 1.1, trimmed: 1 };
+
+            function metres(id) {
+                var f = UNIT_MM[document.getElementById('banner-unit').value] || 1;
+                return (Number(document.getElementById(id).value) || 0) * f / 1000;
+            }
+            function recalc() {
+                var finish = (document.querySelector('input[name=finishing]:checked') || {}).value;
+                var total = metres('banner-width') * metres('banner-height') * 18 * (UPLIFT[finish] || 1);
+                document.getElementById('price').textContent = '£' + total.toFixed(2);
+            }
+            ['#banner-width', '#banner-height', '#banner-unit'].forEach(function (sel) {
+                var el = document.querySelector(sel);
+                el.addEventListener('input', recalc);
+                el.addEventListener('change', recalc);
+            });
+            Array.prototype.forEach.call(document.querySelectorAll('input[name=finishing]'), function (el) {
+                el.addEventListener('change', recalc);
+            });
+            recalc();
+        })();
+    </script>
+
+    <script>
+    /* ══════════════════ the Filecheck integration ══════════════════ */
+    (function () {
+        var UNIT_MAP = { mm: 'mm', cm: 'cm', m: 'm', in: 'in', ft: 'ft' };
+
+        /* Where the customer's choices live on this page, and what each one
+           means. `read` entries feed the rule; `write` entries push the file's
+           own measurements back so the price follows the artwork. */
+        var CONNECTOR = {
+            title: 'PVC banner sync',
+            entries: [
+                { id: 'r-width', type: 'read', field: 'width',
+                  customSelector: '#banner-width',
+                  // The unit is a control the customer changes too, so the
+                  // conversion factor isn't known until we read the page.
+                  convertFrom: { fromSelector: '#banner-unit', map: UNIT_MAP } },
+
+                { id: 'r-height', type: 'read', field: 'height',
+                  customSelector: '#banner-height',
+                  convertFrom: { fromSelector: '#banner-unit', map: UNIT_MAP } },
+
+                // A finish isn't a number — the printer's own table says what
+                // each choice requires.
+                { id: 'r-finish', type: 'read', field: 'finishing',
+                  customSelector: 'input[name=finishing]:checked',
+                  map: {
+                      hem_eyelets: { bleed: { required_mm: 25 }, safety: { min_mm: 20 } },
+                      hem:         { bleed: { required_mm: 15 }, safety: { min_mm: 15 } },
+                      trimmed:     { bleed: { required_mm: 3  }, safety: { min_mm: 5  } },
+                  } },
+
+                // …and back the other way: what we measured in the file lands
+                // in the size boxes, so the price reflects the real artwork.
+                { id: 'w-width', type: 'write', source: 'width', control: 'width',
+                  customSelector: '#banner-width', convertTo: 'cm', decimals: 1 },
+                { id: 'w-height', type: 'write', source: 'height', control: 'height',
+                  customSelector: '#banner-height', convertTo: 'cm', decimals: 1 },
+            ],
+        };
+
+        /* This page carries its own rule instead of referencing a saved
+           workflow, so it runs against any tenant with nothing to configure.
+           The profile body rides raw at accept.preflight.profile; the size and
+           bleed targets below are the DEFAULTS, overwritten at runtime by
+           whatever the connector reads off the page. */
+        var PROFILE = {
+            id: 'prof_demo_banner',
+            schemaVersion: 1,
+            description: 'Large-format banner checks',
+            sections: {
+                geometry: { id: 'geometry', enabled: true, rules: {
+                    'geom.page_size': { id: 'geom.page_size', enabled: true, severity: 'reject',
+                        target: { allowed: [{ width_mm: 3000, height_mm: 1000 }], tolerance_mm: 2, autofix_within_percent: 0 } },
+                    'geom.bleed.required': { id: 'geom.bleed.required', enabled: true, severity: 'warn',
+                        target: { required_mm: 25, tolerance_mm: 1, sides: ['all'], fill: 'none' } },
+                } },
+                raster: { id: 'raster', enabled: true, rules: {
+                    // Meaningless without a print size — which is exactly why the
+                    // customer's chosen size has to reach it.
+                    'raster.effective_dpi': { id: 'raster.effective_dpi', enabled: true, severity: 'warn',
+                        target: { min_dpi: 72, target_width_mm: 3000, target_height_mm: 1000 } },
+                } },
+            },
+        };
+
+        var WORKFLOW = {
+            schemaVersion: 1,
+            title: 'Banner demo — dynamic size',
+            // Deferred trigger on purpose. `on_accept` advances the job out of
+            // intake the moment it completes, which commits the file to
+            // production and correctly locks the queue row — hiding the
+            // findings and the replace button. A product page needs the
+            // customer to keep acting on their file, so the job parks at
+            // intake_done until an order is actually placed.
+            trigger: 'order_placed',
+            intake: { ruleId: null, onError: 'halt', enabled: true },
+            streams: [],
+            merge: { mode: 'none', config: {}, onError: 'halt', enabled: true },
+            finalize: [],
+            proofing: { enabled: false, type: 'basic', timing: 'after_intake', requireApproval: false, config: {} },
+            delivery: { enabled: false, destinationIds: [] },
+            enabled: true,
+            ui: {},
+            rule: {
+                description: 'Banner demo inline rule',
+                cardinality: { min: 1, max: 1, slots: [] },
+                accepts: [{
+                    kind: 'pdf',
+                    mimeTypes: ['application/pdf'],
+                    extensions: ['pdf'],
+                    maxSize: 100000000,
+                    convertToPdf: false,
+                    preflight: { enabled: true, profile: PROFILE },
+                    onFail: 'reject',
+                }, {
+                    kind: 'raster',
+                    mimeTypes: ['image/jpeg', 'image/png', 'image/tiff'],
+                    extensions: ['jpg', 'jpeg', 'png', 'tif', 'tiff'],
+                    maxSize: 100000000,
+                    convertToPdf: false,
+                    preflight: { enabled: true, profile: PROFILE },
+                    onFail: 'reject',
+                }],
+                rejectUnknownTypes: true,
+                enabled: true,
+                ui: { title: 'Upload your banner artwork' },
+            },
+        };
+
+        function whenReady(cb) {
+            var started = Date.now();
+            (function tick() {
+                if (window.Filecheck) return cb();
+                if (Date.now() - started > 10000) return console.error('[banner] Filecheck failed to load');
+                setTimeout(tick, 50);
+            })();
+        }
+
+        whenReady(function () {
+            var fc = Filecheck(FCDemo.key(), FCDemo.options());
+
+            var intake = fc.elements.create('intake', {
+                workflow:  WORKFLOW,
+                preview:   FCDemo.preview,
+                connector: CONNECTOR,
+            });
+
+            // Gate the cart on the single flag Filecheck derives for you.
+            intake.on('status', function (s) {
+                document.getElementById('add-to-cart').disabled = !s.canProceed;
+            });
+
+            intake.mount('#fc-slot');
+        });
+    })();
+    </script>
+</body>
+</html>

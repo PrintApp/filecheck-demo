@@ -60,6 +60,24 @@ export default defineConfig(({ command }) => {
 
     return {
         plugins: [serveElementBundle()],
+        build: {
+            // Every demo page must be listed here or it simply is not built —
+            // Vite's default is index.html alone, which is why the extra pages
+            // worked in `pnpm dev` and were missing from the deployed site.
+            rollupOptions: {
+                input: {
+                    index:         resolve(__dirname, 'index.html'),
+                    businessCards: resolve(__dirname, 'business-cards.html'),
+                    pvcBanner:     resolve(__dirname, 'pvc-banner.html'),
+                    brochure:      resolve(__dirname, 'brochure.html'),
+                    freetool:      resolve(__dirname, 'freetool.html'),
+                    report:        resolve(__dirname, 'report.html'),
+                    // Prospect samples. One page, many configs — deliberately
+                    // NOT linked from the landing page; the link is emailed.
+                    clientSample:  resolve(__dirname, 'client-sample.html'),
+                },
+            },
+        },
         server: {
             port: 5174,
             host: '0.0.0.0',

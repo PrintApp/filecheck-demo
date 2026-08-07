@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acme Print Co. — Custom Business Cards</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <script src="/demo.js"></script>
+
+    <!--
+      Production tenants paste exactly these two lines. In production the
+      `FILECHECK_ELEMENT_CONFIG` is prepended to the bundle itself by the
+      per-tenant CDN edge function (URL like
+      https://cdn.filecheck.io/element/<publishableKey>/filecheck.js), so
+      a real customer ships only the <script> tag. We inline it here to
+      simulate that injection for local development.
+    -->
+    <script>
+        // Simulated CDN-injected config. In production this whole object
+        // is prepended to /element/<publishableKey>/filecheck.js by a
+        // Lambda@Edge in front of CloudFront, so the customer's page
+        // only ships the <script> tag below.
+        window.FILECHECK_ELEMENT_CONFIG = {
+            publishableKey:        FCDemo.key(),
+            presentation:          'inline',
+            mountSelector:         '#fc-inline',
+            moveMountBefore:       '',
+            cartButtonSelector:    '',
+            customVariantSelector: '',
+            elementTheme:          'light',
+            customJs:              '',
+            customCss:             '',
+            workflowId:            FCDemo.workflow('wf_01KVN318C37QWSAFTD19VXS2X1'),
+        };
+        // Local-dev only: point the iframe at the @filecheck/client dev server.
+        Object.assign(window.FILECHECK_ELEMENT_CONFIG, FCDemo.options());
+        (function () {
+            var job = new URLSearchParams(location.search).get('job');
+            if (job) window.FILECHECK_ELEMENT_CONFIG.jobId = job;
+        })();
+    </script>
+    <script async src="%VITE_ELEMENT_SRC%"></script>
+</head>
+<body>
+    <nav class="demo-bar">
+        <a href="/">← All demos</a>
+        <a href="/business-cards.html">Business cards</a>
+        <a href="/pvc-banner.html">PVC banner</a>
+        <a href="/brochure.html">Brochure</a>
+        <a href="/freetool.html">Free tool</a>
+        <a href="/report.html">Report</a>
+    </nav>
+
+    <header class="site-header">
+        <div class="logo">Acme Print Co.</div>
+        <nav>
+            <a class="nav-cta nav-cta-red" target="_blank" href="https://admin.filecheck.io/register">Get Filecheck <span aria-hidden="true">→</span></a>
+            <a class="nav-cta nav-cta-dark" target="_blank" href="https://filecheck.io">Website <span aria-hidden="true">→</span></a>
+            <a href="#">Shop</a>
+            <a href="#">Templates</a>
+            <a href="#">Help</a>
+            <a href="#" class="cart">Cart (0)</a>
+        </nav>
+    </header>
+
+    <main class="product">
+        <section class="product-gallery">
+            <img class="product-image" src="/product-placeholder.svg" alt="Premium Business Cards" />
+            <div class="thumbs">
+                <span class="thumb active"></span>
+                <span class="thumb"></span>
+                <span class="thumb"></span>
+                <span class="thumb"></span>
+            </div>
+        </section>
+
+        <section class="product-details">
+            <p class="breadcrumb">Stationery / Business Cards</p>
+            <h1>Premium Business Cards</h1>
+            <p class="rating">★★★★★ <span>(842 reviews)</span></p>
+            <p class="price">
+                <span class="price-now">$29.00</span>
+                <span class="price-was">$39.00</span>
+                <span class="badge">Save 26%</span>
+            </p>
+
+            <p class="copy">
+                350 gsm matte stock with optional spot-UV finish. Print-ready files welcome —
+                we'll automatically check resolution, bleed, and colour profile before sending
+                to press.
+            </p>
+
+            <div class="options">
+                <label>Quantity
+                    <select>
+                        <option>100</option>
+                        <option selected>250</option>
+                        <option>500</option>
+                        <option>1,000</option>
+                    </select>
+                </label>
+                <label>Finish
+                    <select>
+                        <option>Matte</option>
+                        <option>Gloss</option>
+                        <option>Spot UV</option>
+                    </select>
+                </label>
+            </div>
+
+            <!-- ───────────── FILECHECK MOUNT SLOT ─────────────
+                 The Element auto-mounts here when `presentation: 'inline'`.
+                 When `presentation: 'modal'`, the Element replaces this
+                 slot's contents with a host-rendered "Upload Files" button
+                 that opens a dialog containing the iframe.
+                 The host page does not call mount() itself. -->
+            <div class="upload-section">
+                <div id="fc-inline"></div>
+            </div>
+
+            <div class="cta-row">
+                <!-- The Element wires the cart-button disabled state to
+                     the iframe's `canProceed` status — host JS does nothing. -->
+                <button id="add-to-cart" class="btn-primary" type="button" >Add to Cart — $29.00</button>
+            </div>
+
+            <ul class="trust">
+                <li>✓ Free preflight check</li>
+                <li>✓ Print-ready guarantee</li>
+                <li>✓ 3-day production</li>
+            </ul>
+
+            <details class="integration">
+                <summary>What the shop actually added</summary>
+                <p>
+                    Two lines. The config object is injected by the CDN for a real
+                    tenant, so a live shop ships only the script tag and an empty
+                    <code>&lt;div&gt;</code>.
+                </p>
+<pre><code>&lt;div id="fc-inline"&gt;&lt;/div&gt;
+&lt;script async src="https://cdn.filecheck.io/element/{pk}/filecheck.js"&gt;&lt;/script&gt;</code></pre>
+                <p>
+                    The Element finds the mount slot, gates the cart button on
+                    <code>canProceed</code>, and needs no host JavaScript at all.
+                </p>
+            </details>
+        </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -6,12 +6,22 @@
     <title>Acme Print Co. — Order Report</title>
     <link rel="stylesheet" href="/src/styles.css" />
     <link rel="icon" type="image/png" href="/icon.png" />
+    <script src="/demo.js"></script>
 </head>
 <body>
+    <nav class="demo-bar">
+        <a href="/">← All demos</a>
+        <a href="/business-cards.html">Business cards</a>
+        <a href="/pvc-banner.html">PVC banner</a>
+        <a href="/brochure.html">Brochure</a>
+        <a href="/freetool.html">Free tool</a>
+        <a href="/report.html">Report</a>
+    </nav>
+
     <header class="site-header">
         <div class="logo">Acme Print Co.</div>
         <nav>
-            <a href="/">Shop</a>
+            <a href="/business-cards.html">Shop</a>
             <a href="#">Orders</a>
             <a href="#">Help</a>
         </nav>
@@ -40,19 +50,15 @@
     <script>
         (function () {
             var p     = new URLSearchParams(location.search);
-            var pk    = p.get('pk')    || 'pk_test_demo';
+            var pk    = FCDemo.key();
             var jobId = p.get('job')   || '';
             var token = p.get('token') || undefined;
             var canDownload = p.get('nodl') !== '1';
 
-            var opts = {};
-            // Local-dev only: point the report iframe at the @filecheck/client
-            // dev server. The report element swaps in report.html for us.
-            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-                opts.iframeSrc = 'http://localhost:8010/';
-            }
-
-            var fc = Filecheck(pk, opts);
+            // FCDemo.options() points the report iframe at the
+            // @filecheck/client dev server on localhost; the report element
+            // swaps in report.html for us.
+            var fc = Filecheck(pk, FCDemo.options());
             var report = fc.elements.create('report', {
                 jobId: jobId,
                 token: token,

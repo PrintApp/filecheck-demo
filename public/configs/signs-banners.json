@@ -1,0 +1,326 @@
+{
+    "id": "signs-banners",
+    "sourceUrl": "https://www.signs.com/banners/",
+    "generatedAt": "2026-08-07T18:45:16.963Z",
+    "archetype": "custom-size",
+    "product": {
+        "title": "Vinyl Banner",
+        "blurb": "A customizable vinyl banner available in multiple material weights, printed with UV-resistant inks and suitable for both indoor and outdoor use."
+    },
+    "unit": "in",
+    "controls": [
+        {
+            "key": "width",
+            "label": "Width",
+            "type": "number",
+            "value": 47,
+            "min": 6,
+            "max": 120
+        },
+        {
+            "key": "height",
+            "label": "Height",
+            "type": "number",
+            "value": 24,
+            "min": 6,
+            "max": 1980
+        },
+        {
+            "key": "material",
+            "label": "Material",
+            "type": "radio",
+            "value": "13oz_vinyl",
+            "options": [
+                {
+                    "value": "13oz_vinyl",
+                    "label": "13 oz Standard Vinyl"
+                },
+                {
+                    "value": "18oz_vinyl",
+                    "label": "18 oz Heavy Duty Vinyl"
+                },
+                {
+                    "value": "8oz_mesh",
+                    "label": "8 oz Mesh Vinyl"
+                }
+            ]
+        },
+        {
+            "key": "printed_sides",
+            "label": "Printed Sides",
+            "type": "radio",
+            "value": "single",
+            "options": [
+                {
+                    "value": "single",
+                    "label": "Single Sided"
+                },
+                {
+                    "value": "double",
+                    "label": "Double Sided"
+                }
+            ]
+        },
+        {
+            "key": "edge_finish",
+            "label": "Edge Finish",
+            "type": "radio",
+            "value": "welded_hem",
+            "options": [
+                {
+                    "value": "welded_hem",
+                    "label": "Welded Hem"
+                },
+                {
+                    "value": "sewn_hem",
+                    "label": "Sewn Hem"
+                },
+                {
+                    "value": "flush_cut",
+                    "label": "None (Flush Cut)"
+                }
+            ]
+        },
+        {
+            "key": "grommets",
+            "label": "Grommets",
+            "type": "select",
+            "value": "every_2_3ft",
+            "options": [
+                {
+                    "value": "every_2_3ft",
+                    "label": "Every 2-3 ft"
+                },
+                {
+                    "value": "every_12_18in",
+                    "label": "Every 12-18 in"
+                },
+                {
+                    "value": "4_corners",
+                    "label": "4 Corners"
+                },
+                {
+                    "value": "top_corners",
+                    "label": "Top Corners Only"
+                },
+                {
+                    "value": "none",
+                    "label": "None"
+                }
+            ]
+        },
+        {
+            "key": "pole_pockets",
+            "label": "Pole Pockets",
+            "type": "radio",
+            "value": "none",
+            "options": [
+                {
+                    "value": "none",
+                    "label": "None"
+                },
+                {
+                    "value": "top_bottom",
+                    "label": "3\" Pockets (Top & Bottom)"
+                },
+                {
+                    "value": "top_only",
+                    "label": "3\" Pocket (Top Only)"
+                }
+            ]
+        }
+    ],
+    "connector": {
+        "title": "Vinyl Banner sync",
+        "entries": [
+            {
+                "id": "r-width",
+                "type": "read",
+                "field": "width",
+                "customSelector": "#fc-width",
+                "convertFrom": "in"
+            },
+            {
+                "id": "r-height",
+                "type": "read",
+                "field": "height",
+                "customSelector": "#fc-height",
+                "convertFrom": "in"
+            },
+            {
+                "id": "r-printed_sides",
+                "type": "read",
+                "field": "sides",
+                "customSelector": "[name=\"printed_sides\"]:checked, #fc-printed_sides",
+                "map": {
+                    "single": {
+                        "pageCount": {
+                            "min": 1,
+                            "max": 1
+                        }
+                    },
+                    "double": {
+                        "pageCount": {
+                            "min": 2,
+                            "max": 2
+                        }
+                    }
+                }
+            },
+            {
+                "id": "r-edge_finish",
+                "type": "read",
+                "field": "finishing",
+                "customSelector": "[name=\"edge_finish\"]:checked, #fc-edge_finish",
+                "map": {
+                    "welded_hem": {
+                        "bleed": {
+                            "required_mm": 25
+                        },
+                        "safety": {
+                            "min_mm": 20
+                        }
+                    },
+                    "sewn_hem": {
+                        "bleed": {
+                            "required_mm": 25
+                        },
+                        "safety": {
+                            "min_mm": 20
+                        }
+                    },
+                    "flush_cut": {
+                        "bleed": {
+                            "required_mm": 3
+                        },
+                        "safety": {
+                            "min_mm": 5
+                        }
+                    }
+                }
+            },
+            {
+                "id": "r-pole_pockets",
+                "type": "read",
+                "field": "finishing",
+                "customSelector": "[name=\"pole_pockets\"]:checked, #fc-pole_pockets",
+                "map": {
+                    "top_bottom": {
+                        "safety": {
+                            "min_mm": 90
+                        }
+                    },
+                    "top_only": {
+                        "safety": {
+                            "min_mm": 90
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "profile": {
+        "id": "prof_demo_signs-banners",
+        "schemaVersion": 1,
+        "description": "Vinyl Banner checks",
+        "sections": {
+            "geometry": {
+                "id": "geometry",
+                "enabled": true,
+                "rules": {
+                    "geom.page_size": {
+                        "id": "geom.page_size",
+                        "enabled": true,
+                        "severity": "reject",
+                        "target": {
+                            "allowed": [
+                                {
+                                    "width_mm": 1193.8,
+                                    "height_mm": 609.5999999999999
+                                }
+                            ],
+                            "tolerance_mm": 2,
+                            "autofix_within_percent": 0
+                        }
+                    },
+                    "geom.bleed.required": {
+                        "id": "geom.bleed.required",
+                        "enabled": true,
+                        "severity": "warn",
+                        "target": {
+                            "required_mm": 25,
+                            "tolerance_mm": 1,
+                            "sides": [
+                                "all"
+                            ],
+                            "fill": "none"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "fileKinds": [
+        "pdf",
+        "raster",
+        "vector"
+    ],
+    "evidence": [
+        {
+            "field": "sizeLimits.minWidth",
+            "quote": "Technically we don't allow banners to be smaller than 6\"x6\""
+        },
+        {
+            "field": "sizeLimits.minHeight",
+            "quote": "Technically we don't allow banners to be smaller than 6\"x6\""
+        },
+        {
+            "field": "sizeLimits.maxWidth",
+            "quote": "The maximum size of our banners is 120\"x1980\" (10'x165')"
+        },
+        {
+            "field": "sizeLimits.maxHeight",
+            "quote": "The maximum size of our banners is 120\"x1980\" (10'x165')"
+        },
+        {
+            "field": "sizeUnit",
+            "quote": "Size (in Inches)"
+        },
+        {
+            "field": "fileKinds",
+            "quote": "Upload it in one of our accepted formats — PDF, JPG, PNG, AI, or PSD"
+        }
+    ],
+    "assumptions": [
+        {
+            "field": "edge_finish.welded_hem",
+            "value": "25 mm bleed, 20 mm safe margin",
+            "note": "a hem folds about 25 mm of artwork back"
+        },
+        {
+            "field": "edge_finish.sewn_hem",
+            "value": "25 mm bleed, 20 mm safe margin",
+            "note": "a hem folds about 25 mm of artwork back"
+        },
+        {
+            "field": "edge_finish.flush_cut",
+            "value": "3 mm bleed, 5 mm safe margin",
+            "note": "cut to size — standard trim bleed"
+        },
+        {
+            "field": "pole_pockets.top_bottom",
+            "value": "90 mm safe margin",
+            "note": "a pole pocket swallows roughly 75–100 mm at that edge"
+        },
+        {
+            "field": "pole_pockets.top_only",
+            "value": "90 mm safe margin",
+            "note": "a pole pocket swallows roughly 75–100 mm at that edge"
+        },
+        {
+            "field": "bleed",
+            "value": "25 mm",
+            "note": "the usual allowance for this finish, since the page states none"
+        }
+    ]
+}

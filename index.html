@@ -3,135 +3,123 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Acme Print Co. — Custom Business Cards</title>
+    <title>Filecheck — Live demos</title>
+    <meta name="description" content="Live, working examples of Filecheck checking customer artwork on a real product page." />
     <link rel="stylesheet" href="/src/styles.css" />
     <link rel="icon" type="image/png" href="/icon.png" />
-
-    <!--
-      Production tenants paste exactly these two lines. In production the
-      `FILECHECK_ELEMENT_CONFIG` is prepended to the bundle itself by the
-      per-tenant CDN edge function (URL like
-      https://cdn.filecheck.io/element/<publishableKey>/filecheck.js), so
-      a real customer ships only the <script> tag. We inline it here to
-      simulate that injection for local development.
-    -->
-    <script>
-        // Simulated CDN-injected config. In production this whole object
-        // is prepended to /element/<publishableKey>/filecheck.js by a
-        // Lambda@Edge in front of CloudFront, so the customer's page
-        // only ships the <script> tag below.
-        window.FILECHECK_ELEMENT_CONFIG = {
-            publishableKey:        'pk_01KRX2E9SGXZCAXR7QZ2TW00YM',
-            presentation:          'inline',
-            mountSelector:         '#fc-inline',
-            moveMountBefore:       '',
-            cartButtonSelector:    '',
-            customVariantSelector: '',
-            elementTheme:          'light',
-            customJs:              '',
-            customCss:             '',
-            customCss:             '',
-            workflowId:             'wf_01KVN318C37QWSAFTD19VXS2X1',
-        };
-        // Local-dev only: forward ?pk=… / ?workflow=… overrides and point
-        // the iframe at the @filecheck/client dev server.
-        (function () {
-            var p = new URLSearchParams(location.search);
-            var pk = p.get('pk');
-            var wf = p.get('workflow');
-            var jo = p.get('job');
-            if (pk) window.FILECHECK_ELEMENT_CONFIG.publishableKey = pk;
-            if (wf) window.FILECHECK_ELEMENT_CONFIG.workflowId     = wf;
-            if (jo) window.FILECHECK_ELEMENT_CONFIG.jobId          = jo;
-            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-                window.FILECHECK_ELEMENT_CONFIG.iframeSrc = 'http://localhost:8010/';
-            }
-        })();
-    </script>
-    <script async src="%VITE_ELEMENT_SRC%"></script>
+    <script src="/demo.js"></script>
 </head>
 <body>
     <header class="site-header">
-        <div class="logo">Acme Print Co.</div>
+        <div class="logo">Filecheck demos</div>
         <nav>
             <a class="nav-cta nav-cta-red" target="_blank" href="https://admin.filecheck.io/register">Get Filecheck <span aria-hidden="true">→</span></a>
             <a class="nav-cta nav-cta-dark" target="_blank" href="https://filecheck.io">Website <span aria-hidden="true">→</span></a>
-            <a href="#">Shop</a>
-            <a href="#">Templates</a>
-            <a href="#">Help</a>
-            <a href="#" class="cart">Cart (0)</a>
         </nav>
     </header>
 
-    <main class="product">
-        <section class="product-gallery">
-            <img class="product-image" src="/product-placeholder.svg" alt="Premium Business Cards" />
-            <div class="thumbs">
-                <span class="thumb active"></span>
-                <span class="thumb"></span>
-                <span class="thumb"></span>
-                <span class="thumb"></span>
-            </div>
+    <main class="landing">
+        <section class="landing-hero">
+            <h1>See it check a real file</h1>
+            <p class="lede">
+                Each page below is a working shop page with Filecheck on it. Upload
+                something — a good PDF, a bad one, the wrong size — and watch what
+                happens. Nothing is mocked; these run against the live service.
+            </p>
         </section>
 
-        <section class="product-details">
-            <p class="breadcrumb">Stationery / Business Cards</p>
-            <h1>Premium Business Cards</h1>
-            <p class="rating">★★★★★ <span>(842 reviews)</span></p>
-            <p class="price">
-                <span class="price-now">$29.00</span>
-                <span class="price-was">$39.00</span>
-                <span class="badge">Save 26%</span>
+        <section class="demo-grid">
+            <a class="demo-card" href="/business-cards.html">
+                <span class="demo-card-kicker">Stationery</span>
+                <h2>Business cards</h2>
+                <p>
+                    The standard setup: a product page with an uploader, and an
+                    Add&nbsp;to&nbsp;Cart button that stays disabled until the
+                    artwork passes.
+                </p>
+                <span class="demo-card-shows">Shows: intake, cart gating, auto-mount</span>
+            </a>
+
+            <a class="demo-card" href="/pvc-banner.html">
+                <span class="demo-card-kicker">Large format</span>
+                <h2>PVC banner</h2>
+                <p>
+                    The customer types their own size, in their own units, and picks
+                    a finish. The artwork is checked against <em>that</em> banner —
+                    not a size baked in months ago.
+                </p>
+                <span class="demo-card-shows">Shows: size read from the page, two-way sync, finish&nbsp;→&nbsp;bleed</span>
+            </a>
+
+            <a class="demo-card" href="/brochure.html">
+                <span class="demo-card-kicker">Print</span>
+                <h2>Folded brochure</h2>
+                <p>
+                    Page count comes from what the customer ordered. A 4-page
+                    brochure demands four pages; switch to 8 and the same file is
+                    suddenly wrong.
+                </p>
+                <span class="demo-card-shows">Shows: page count read from the page, single vs double sided</span>
+            </a>
+
+            <a class="demo-card" href="/freetool.html">
+                <span class="demo-card-kicker">Free tool</span>
+                <h2>Preflight checker</h2>
+                <p>
+                    A multi-file drop zone beside a live report. Click any file to
+                    read its findings. This is the recipe the filecheck.io tools
+                    pages are built from.
+                </p>
+                <span class="demo-card-shows">Shows: list-mode intake, report element, inline workflow</span>
+            </a>
+
+            <a class="demo-card" href="/report.html">
+                <span class="demo-card-kicker">Post-purchase</span>
+                <h2>Order report</h2>
+                <p>
+                    The read-only report for a finished job — what you'd show a
+                    customer on their order page, or an operator in a dashboard.
+                </p>
+                <span class="demo-card-shows">Shows: report element, fetch mode</span>
+            </a>
+        </section>
+
+        <section class="key-panel">
+            <h2>Try it with your own workflow</h2>
+            <p>
+                By default these run on our demo tenant. Paste your own publishable
+                key and every demo on this site will use it — no need to add
+                <code>?pk=</code> to each page.
+                <span class="key-badge" data-fc-key-badge hidden></span>
             </p>
-
-            <p class="copy">
-                350 gsm matte stock with optional spot-UV finish. Print-ready files welcome —
-                we'll automatically check resolution, bleed, and colour profile before sending
-                to press.
+            <form class="key-form" data-fc-key-form>
+                <label>
+                    Publishable key
+                    <input name="pk" type="text" placeholder="pk_live_…" autocomplete="off" spellcheck="false" />
+                </label>
+                <label>
+                    Workflow id <span class="key-optional">(optional)</span>
+                    <input name="workflow" type="text" placeholder="wf_…" autocomplete="off" spellcheck="false" />
+                </label>
+                <div class="key-actions">
+                    <button type="submit" class="btn-primary">Use this key</button>
+                    <button type="button" class="btn-quiet" data-fc-key-reset>Reset to demo tenant</button>
+                </div>
+            </form>
+            <p class="key-note">
+                Stored in this browser only. The demos that ship their own inline
+                workflow ignore the workflow id — they carry their rules with them
+                so there is nothing to configure.
             </p>
-
-            <div class="options">
-                <label>Quantity
-                    <select>
-                        <option>100</option>
-                        <option selected>250</option>
-                        <option>500</option>
-                        <option>1,000</option>
-                    </select>
-                </label>
-                <label>Finish
-                    <select>
-                        <option>Matte</option>
-                        <option>Gloss</option>
-                        <option>Spot UV</option>
-                    </select>
-                </label>
-            </div>
-
-            <!-- ───────────── FILECHECK MOUNT SLOT ─────────────
-                 The Element auto-mounts here when `presentation: 'inline'`.
-                 When `presentation: 'modal'`, the Element replaces this
-                 slot's contents with a host-rendered "Upload Files" button
-                 that opens a dialog containing the iframe.
-                 The host page does not call mount() itself. -->
-            <div class="upload-section">
-                <div id="fc-inline"></div>
-            </div>
-
-            <div class="cta-row">
-                <!-- The Element wires the cart-button disabled state to
-                     the iframe's `canProceed` status — host JS does nothing. -->
-                <button id="add-to-cart" class="btn-primary" type="button" >Add to Cart — $29.00</button>
-            </div>
-
-            <ul class="trust">
-                <li>✓ Free preflight check</li>
-                <li>✓ Print-ready guarantee</li>
-                <li>✓ 3-day production</li>
-            </ul>
         </section>
     </main>
 
-    <script type="module" src="/src/main.ts"></script>
+    <footer class="demo-footer">
+        <p>
+            These pages are also the reference integrations in the Filecheck repo —
+            view source on any of them and you'll see the whole integration, usually
+            under 20 lines.
+        </p>
+    </footer>
 </body>
 </html>

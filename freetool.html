@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Filecheck — Free Tool Recipe (list-mode intake + file-scoped report)</title>
     <link rel="stylesheet" href="/src/styles.css" />
+    <script src="/demo.js"></script>
     <style>
         /* Two-pane free-tool layout: file queue left, report right. */
         .tool {
@@ -49,11 +50,19 @@
     </style>
 </head>
 <body>
+    <nav class="demo-bar">
+        <a href="/">← All demos</a>
+        <a href="/business-cards.html">Business cards</a>
+        <a href="/pvc-banner.html">PVC banner</a>
+        <a href="/brochure.html">Brochure</a>
+        <a href="/freetool.html">Free tool</a>
+        <a href="/report.html">Report</a>
+    </nav>
+
     <header class="site-header">
         <div class="logo">Filecheck Free Tool</div>
         <nav>
-            <a href="/">Intake demo</a>
-            <a href="/report.html">Report demo</a>
+            <a class="nav-cta nav-cta-red" target="_blank" href="https://admin.filecheck.io/register">Get Filecheck <span aria-hidden="true">→</span></a>
         </nav>
     </header>
 
@@ -88,10 +97,13 @@
     <script>
         (function () {
             var p  = new URLSearchParams(location.search);
-            var pk = p.get('pk') || 'pk_test_demo';
-            var wf = p.get('wf') || 'wf_demo_preflight';
+            var pk = FCDemo.key();
+            var wf = FCDemo.workflow('wf_demo_preflight');
             var canDownload = p.get('nodl') !== '1';
-            var inline = p.get('inline') === '1';
+            // Inline by default on the demo site: the page carries its own rule
+            // so it runs against any tenant with nothing configured in admin.
+            // ?inline=0 falls back to the saved workflow above.
+            var inline = p.get('inline') !== '0';
 
             /* Transient inline workflow (?inline=1): the whole check travels
                with the page — the profile body rides RAW at its point of use
@@ -115,7 +127,11 @@
             var INLINE_WORKFLOW = {
                 schemaVersion: 1,
                 title: 'Freetool demo — inline preflight',
-                trigger: 'on_accept',
+                // Nothing happens after the check on a free tool, so the job
+                // stays at intake_done. `on_accept` would advance it out of
+                // intake, which locks the row and takes away the customer's
+                // ability to remove the file and try another one.
+                trigger: 'manual',
                 intake: { ruleId: null, onError: 'halt', enabled: true },
                 streams: [],
                 merge: { mode: 'none', config: {}, onError: 'halt', enabled: true },
@@ -145,14 +161,10 @@
                 },
             };
 
-            var opts = {};
-            // Local-dev only: point both iframes at the @filecheck/client dev
-            // server. The report element swaps in report.html by itself.
-            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-                opts.iframeSrc = 'http://localhost:8010/';
-            }
-
-            var fc = Filecheck(pk, opts);
+            // FCDemo.options() points both iframes at the @filecheck/client
+            // dev server on localhost; the report element swaps in report.html
+            // by itself.
+            var fc = Filecheck(pk, FCDemo.options());
 
             /* ── Intake, list mode ─────────────────────────────────────── */
             var intakeOpts = {
