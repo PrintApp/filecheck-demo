@@ -1,7 +1,7 @@
 {
     "id": "signsquad-product-pvc-banner",
     "sourceUrl": "https://www.signsquad.co.uk/product/pvc-banner/",
-    "generatedAt": "2026-08-07T19:49:26.070Z",
+    "generatedAt": "2026-08-07T19:51:26.953Z",
     "archetype": "custom-size",
     "product": {
         "title": "PVC Banner",
@@ -196,15 +196,11 @@
         },
         {
             "field": "unitSwitchable",
-            "quote": "Feet Inches Meters CM MM"
+            "quote": "Display in: Feet Inches Meters CM MM"
         },
         {
             "field": "fileKinds",
             "quote": "Accepted formats: PDF, JPG, PNG, AI, PSD"
-        },
-        {
-            "field": "options.finishing",
-            "quote": "Hem and Eyelets Hem Only Trimmed to Size"
         }
     ],
     "assumptions": [
