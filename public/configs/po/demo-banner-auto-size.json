@@ -1,0 +1,358 @@
+{
+  "version": "2.0",
+  "productId": "demo-banner-auto-size",
+  "title": "Banner, priced from your artwork",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    },
+    "setupFee": 6,
+    "minimumPrice": 25
+  },
+  "sections": [
+    {
+      "id": "artwork",
+      "title": "Your artwork - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your banner artwork",
+          "helpText": "No size inputs on this page; the banner is priced from your artwork’s own trim size.",
+          "required": true,
+          "accept": [
+            "application/pdf",
+            "image/jpeg",
+            "image/png",
+            "image/tiff"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Banner demo; auto size",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Banner checks; the upload decides the size and the price.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_banner_auto",
+                        "schemaVersion": 1,
+                        "description": "Banner checks; any size, priced from the artwork",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 25,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 72
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  },
+                  {
+                    "kind": "raster",
+                    "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/tiff"
+                    ],
+                    "extensions": [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "tif",
+                      "tiff"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_banner_auto",
+                        "schemaVersion": 1,
+                        "description": "Banner checks; any size, priced from the artwork",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 25,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 72
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your banner artwork"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "size-readout",
+          "type": "info",
+          "display": "summary",
+          "label": "Detected size",
+          "visibleWhen": {
+            "all": [
+              {
+                "ref": "file.status",
+                "op": "eq",
+                "value": "ready"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "material",
+      "title": "Material & finishing",
+      "fields": [
+        {
+          "id": "material",
+          "type": "select-one",
+          "display": "list",
+          "label": "Material",
+          "role": "material",
+          "required": true,
+          "options": [
+            {
+              "id": "pvc-450",
+              "label": "450 gsm PVC (indoor)",
+              "default": true,
+              "sku": "PVC450",
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 18,
+                  "areaUnit": "sqm",
+                  "tiers": {
+                    "basis": "area",
+                    "mode": "flat",
+                    "rows": [
+                      {
+                        "upTo": 5,
+                        "amount": 18
+                      },
+                      {
+                        "upTo": 20,
+                        "amount": 14.5
+                      },
+                      {
+                        "amount": 11
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "pvc-650",
+              "label": "650 gsm PVC (outdoor, reinforced)",
+              "sku": "PVC650",
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 24,
+                  "areaUnit": "sqm",
+                  "tiers": {
+                    "basis": "area",
+                    "mode": "flat",
+                    "rows": [
+                      {
+                        "upTo": 5,
+                        "amount": 24
+                      },
+                      {
+                        "upTo": 20,
+                        "amount": 19.5
+                      },
+                      {
+                        "amount": 15
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "finishing",
+          "type": "select-many",
+          "display": "list",
+          "label": "Finishing",
+          "minSelect": 0,
+          "options": [
+            {
+              "id": "hem",
+              "label": "Hemmed edges",
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 2,
+                  "areaUnit": "sqm"
+                }
+              ]
+            },
+            {
+              "id": "eyelets",
+              "label": "Eyelets every 50 cm",
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 8
+                }
+              ]
+            },
+            {
+              "id": "pole-pockets",
+              "label": "Pole pockets",
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 12
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quantity",
+      "title": "Quantity",
+      "fields": [
+        {
+          "id": "qty",
+          "type": "quantity",
+          "display": "stepper",
+          "label": "How many banners?",
+          "min": 1,
+          "defaultValue": 1
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

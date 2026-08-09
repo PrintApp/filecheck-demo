@@ -1,0 +1,432 @@
+{
+  "version": "2.0",
+  "productId": "demo-banner-typed-size",
+  "title": "PVC banner",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    },
+    "setupFee": 6,
+    "minimumPrice": 25
+  },
+  "sections": [
+    {
+      "id": "size",
+      "title": "Size",
+      "fields": [
+        {
+          "id": "size",
+          "type": "dimensions",
+          "display": "inputs",
+          "label": "Finished size",
+          "required": true,
+          "units": [
+            "mm",
+            "cm",
+            "in"
+          ],
+          "defaultUnit": "cm",
+          "minW": 20,
+          "maxW": 1000,
+          "minH": 20,
+          "maxH": 300,
+          "defaultValue": {
+            "w": 300,
+            "h": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "finishing",
+      "title": "Finishing",
+      "fields": [
+        {
+          "id": "finishing",
+          "type": "select-one",
+          "display": "list",
+          "label": "Finishing",
+          "required": true,
+          "options": [
+            {
+              "id": "hem-eyelets",
+              "label": "Hem and eyelets",
+              "description": "Needs 25 mm bleed.",
+              "default": true,
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 8
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "bleed": {
+                    "required_mm": 25
+                  },
+                  "safety": {
+                    "min_mm": 20
+                  }
+                }
+              }
+            },
+            {
+              "id": "hem",
+              "label": "Hem only",
+              "description": "Needs 15 mm bleed.",
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 4
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "bleed": {
+                    "required_mm": 15
+                  },
+                  "safety": {
+                    "min_mm": 15
+                  }
+                }
+              }
+            },
+            {
+              "id": "trimmed",
+              "label": "Trimmed to size",
+              "description": "Needs 3 mm bleed.",
+              "priceModifiers": [],
+              "filecheck": {
+                "context": {
+                  "bleed": {
+                    "required_mm": 3
+                  },
+                  "safety": {
+                    "min_mm": 5
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your artwork - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your banner artwork",
+          "helpText": "Checked against the exact size you typed and the bleed your finishing needs. Change either and the check re-runs.",
+          "required": true,
+          "accept": [
+            "application/pdf",
+            "image/jpeg",
+            "image/png",
+            "image/tiff"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Banner demo; typed size",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Banner checks; size and finish come from the page.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_banner_typed",
+                        "schemaVersion": 1,
+                        "description": "Banner checks; size and finish from the page",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 3000,
+                                      "height_mm": 1000
+                                    }
+                                  ],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 25,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 72,
+                                  "target_width_mm": 3000,
+                                  "target_height_mm": 1000
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  },
+                  {
+                    "kind": "raster",
+                    "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/tiff"
+                    ],
+                    "extensions": [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "tif",
+                      "tiff"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_banner_typed",
+                        "schemaVersion": 1,
+                        "description": "Banner checks; size and finish from the page",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 3000,
+                                      "height_mm": 1000
+                                    }
+                                  ],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 25,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 72,
+                                  "target_width_mm": 3000,
+                                  "target_height_mm": 1000
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your banner artwork"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "material",
+      "title": "Material & quantity",
+      "fields": [
+        {
+          "id": "material",
+          "type": "select-one",
+          "display": "list",
+          "label": "Material",
+          "role": "material",
+          "required": true,
+          "options": [
+            {
+              "id": "pvc-450",
+              "label": "450 gsm PVC (indoor)",
+              "default": true,
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 18,
+                  "areaUnit": "sqm",
+                  "dimensionsField": "size",
+                  "tiers": {
+                    "basis": "area",
+                    "mode": "flat",
+                    "rows": [
+                      {
+                        "upTo": 5,
+                        "amount": 18
+                      },
+                      {
+                        "upTo": 20,
+                        "amount": 14.5
+                      },
+                      {
+                        "amount": 11
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "pvc-650",
+              "label": "650 gsm PVC (outdoor, reinforced)",
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 24,
+                  "areaUnit": "sqm",
+                  "dimensionsField": "size",
+                  "tiers": {
+                    "basis": "area",
+                    "mode": "flat",
+                    "rows": [
+                      {
+                        "upTo": 5,
+                        "amount": 24
+                      },
+                      {
+                        "upTo": 20,
+                        "amount": 19.5
+                      },
+                      {
+                        "amount": 15
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "qty",
+          "type": "quantity",
+          "display": "stepper",
+          "label": "How many banners?",
+          "min": 1,
+          "defaultValue": 1
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

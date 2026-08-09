@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Acme Print Co. — Order Report</title>
+    <title>Acme Print Co. · Order Report</title>
     <link rel="stylesheet" href="/src/styles.css" />
     <link rel="icon" type="image/png" href="/icon.png" />
     <script src="/demo.js"></script>
@@ -72,7 +72,7 @@
                 // Host decides what to do. When canDownload is false the report
                 // performs no download itself and relies on this event.
                 console.log('[demo] download requested', e);
-                if (!canDownload) alert('Download gated — host would prompt signup for file ' + e.fileId);
+                if (!canDownload) alert('Download gated; host would prompt signup for file ' + e.fileId);
             });
 
             report.mount('#fc-report');

@@ -1,0 +1,355 @@
+{
+  "version": "2.0",
+  "productId": "demo-booklet-saddle",
+  "title": "Saddle-stitched booklet",
+  "layout": "wizard",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    },
+    "setupFee": 15
+  },
+  "sections": [
+    {
+      "id": "spec",
+      "title": "Format",
+      "fields": [
+        {
+          "id": "size",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Size",
+          "role": "size",
+          "required": true,
+          "options": [
+            {
+              "id": "a5",
+              "label": "A5",
+              "default": true,
+              "priceModifiers": [],
+              "filecheck": {
+                "context": {
+                  "artworkSize": {
+                    "width_mm": 148,
+                    "height_mm": 210
+                  }
+                }
+              }
+            },
+            {
+              "id": "a4",
+              "label": "A4",
+              "priceModifiers": [
+                {
+                  "type": "multiplier",
+                  "amount": 1.35
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "artworkSize": {
+                    "width_mm": 210,
+                    "height_mm": 297
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "pages",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Page count",
+          "role": "pages",
+          "required": true,
+          "helpText": "Saddle stitch needs a multiple of four. Your file must match the count you pick.",
+          "options": [
+            {
+              "id": "8",
+              "label": "8 pages",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "12",
+              "label": "12 pages",
+              "priceModifiers": []
+            },
+            {
+              "id": "16",
+              "label": "16 pages",
+              "priceModifiers": []
+            },
+            {
+              "id": "20",
+              "label": "20 pages",
+              "priceModifiers": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your document - Filecheck",
+      "fields": [
+        {
+          "id": "document",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your booklet (single pages, in order)",
+          "helpText": "Export as single pages, not reader’s spreads. The inner-stock price is computed from the pages we actually find in your file.",
+          "required": true,
+          "accept": [
+            "application/pdf"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Saddle booklet demo",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Booklet checks; the picked pagination is enforced against the file.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_booklet",
+                        "schemaVersion": 1,
+                        "description": "Saddle-stitch booklet checks",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 148,
+                                      "height_mm": 210
+                                    }
+                                  ],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.page_count": {
+                                "id": "geom.page_count",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "min": 8,
+                                  "max": 48,
+                                  "allowed": []
+                                }
+                              },
+                              "geom.consistent_page_sizes": {
+                                "id": "geom.consistent_page_sizes",
+                                "enabled": true,
+                                "severity": "reject"
+                              },
+                              "geom.spread_vs_single": {
+                                "id": "geom.spread_vs_single",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "mode": "single"
+                                }
+                              }
+                            }
+                          },
+                          "text": {
+                            "id": "text",
+                            "enabled": true,
+                            "rules": {
+                              "text.fonts_embedded": {
+                                "id": "text.fonts_embedded",
+                                "enabled": true,
+                                "severity": "warn"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your booklet"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "stocks",
+      "title": "Cover & inner stock",
+      "fields": [
+        {
+          "id": "cover",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Cover",
+          "required": true,
+          "options": [
+            {
+              "id": "gloss-250",
+              "label": "250 gsm gloss",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "matte-300",
+              "label": "300 gsm matte",
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "inner",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Inner pages",
+          "required": true,
+          "options": [
+            {
+              "id": "silk-115",
+              "label": "115 gsm silk",
+              "default": true,
+              "priceModifiers": [
+                {
+                  "type": "perPage",
+                  "amount": 0.03
+                }
+              ]
+            },
+            {
+              "id": "silk-130",
+              "label": "130 gsm silk",
+              "priceModifiers": [
+                {
+                  "type": "perPage",
+                  "amount": 0.04
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quantity",
+      "title": "Quantity",
+      "fields": [
+        {
+          "id": "qty",
+          "type": "quantity",
+          "display": "pills",
+          "label": "How many booklets?",
+          "min": 25,
+          "defaultValue": 50,
+          "presets": [
+            25,
+            50,
+            100,
+            250
+          ],
+          "priceModifiers": [
+            {
+              "type": "perUnit",
+              "amount": 1.1,
+              "tiers": {
+                "basis": "quantity",
+                "mode": "flat",
+                "rows": [
+                  {
+                    "upTo": 99,
+                    "amount": 1.1
+                  },
+                  {
+                    "upTo": 249,
+                    "amount": 0.85
+                  },
+                  {
+                    "amount": 0.65
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

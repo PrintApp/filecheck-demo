@@ -1,0 +1,332 @@
+{
+  "version": "2.0",
+  "productId": "demo-poster-classic",
+  "title": "Custom size poster",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    },
+    "minimumPrice": 12
+  },
+  "sections": [
+    {
+      "id": "size",
+      "title": "Size",
+      "fields": [
+        {
+          "id": "dimensions",
+          "type": "dimensions",
+          "display": "inputs",
+          "label": "Poster size",
+          "helpText": "The price comes from this size; the file only has to look good at it.",
+          "required": true,
+          "units": [
+            "mm",
+            "cm",
+            "in"
+          ],
+          "defaultUnit": "cm",
+          "minW": 10,
+          "maxW": 150,
+          "minH": 10,
+          "maxH": 300,
+          "defaultValue": {
+            "w": 50,
+            "h": 70
+          }
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your artwork - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your poster artwork",
+          "helpText": "Resolution is judged at the size you chose above. Grow the poster and the same file may stop being sharp enough.",
+          "required": true,
+          "accept": [
+            "application/pdf",
+            "image/jpeg",
+            "image/png"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Poster demo",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Poster checks; resolution at the chosen size; price never comes from the file.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_poster",
+                        "schemaVersion": 1,
+                        "description": "Poster checks. DPI at the chosen print size",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 500,
+                                      "height_mm": 700
+                                    }
+                                  ],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 5,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 150,
+                                  "target_width_mm": 500,
+                                  "target_height_mm": 700
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  },
+                  {
+                    "kind": "raster",
+                    "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/tiff"
+                    ],
+                    "extensions": [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "tif",
+                      "tiff"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_poster",
+                        "schemaVersion": 1,
+                        "description": "Poster checks. DPI at the chosen print size",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 500,
+                                      "height_mm": 700
+                                    }
+                                  ],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 5,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 150,
+                                  "target_width_mm": 500,
+                                  "target_height_mm": 700
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your poster artwork"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "paper",
+      "title": "Paper & quantity",
+      "fields": [
+        {
+          "id": "stock",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Paper",
+          "role": "material",
+          "required": true,
+          "options": [
+            {
+              "id": "matt-170",
+              "label": "170 gsm matt",
+              "default": true,
+              "sku": "M170",
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 28,
+                  "areaUnit": "sqm",
+                  "dimensionsField": "dimensions"
+                }
+              ]
+            },
+            {
+              "id": "satin-250",
+              "label": "250 gsm satin",
+              "sku": "S250",
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 39,
+                  "areaUnit": "sqm",
+                  "dimensionsField": "dimensions"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "qty",
+          "type": "quantity",
+          "display": "pills",
+          "label": "How many posters?",
+          "min": 1,
+          "defaultValue": 1,
+          "presets": [
+            1,
+            2,
+            5,
+            10,
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,508 @@
+{
+  "$comment": "Single source of truth for the combined Filecheck × Print Options demos. shop.html?product=<slug> reads its chrome and blueprint URL from here; the landing page builds its category cards from the same entries. Blueprints live in /configs/po/ (11 of them emitted by tools/make-po-configs.mjs, the two pilots hand-authored) and every one is price-verified by product-options' check.mjs against samples/manifest.json.",
+  "categories": [
+    "Stationery & marketing",
+    "Documents & books",
+    "Large format",
+    "Apparel & merch"
+  ],
+  "products": {
+    "business-cards": {
+      "productId": "demo-business-cards",
+      "config": "/configs/po/demo-business-cards.json",
+      "brand": "Milldale Press",
+      "breadcrumb": "Stationery / Business cards",
+      "title": "Business cards",
+      "category": "Stationery & marketing",
+      "swatch": "Cards",
+      "swatchClass": "product-swatch-cards",
+      "copy": "The everyday baseline: quantity breaks and finish uplifts priced by Print Options, while Filecheck checks size, bleed, safe zone and fonts; the artwork is checked, never priced from.",
+      "shows": "Shows: cart gating, quantity tiers, finish uplifts, double-sided page count",
+      "tags": [
+        "size",
+        "bleed",
+        "safe zone",
+        "page count",
+        "fonts",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Upload the good card, it passes clean.",
+        "Try the no-bleed version: the warning explains exactly what will get trimmed wrong.",
+        "Switch to double-sided; the same one-page file is suddenly missing its back.",
+        "Stack finishes and watch the order the uplifts apply in."
+      ],
+      "samples": [
+        {
+          "label": "85 × 55 card with bleed, passes",
+          "href": "/samples/card-good.pdf"
+        },
+        {
+          "label": "Same card, no bleed, warns",
+          "href": "/samples/card-nobleed.pdf"
+        }
+      ],
+      "blurb": "Quantity breaks and finish uplifts priced live; size, bleed, safe zone and fonts checked.",
+      "pills": [
+        "cart gating",
+        "quantity tiers"
+      ]
+    },
+    "flyers": {
+      "productId": "demo-flyer-sizes",
+      "config": "/configs/po/demo-flyer-sizes.json",
+      "brand": "Milldale Press",
+      "breadcrumb": "Stationery / Flyers",
+      "title": "Flyers",
+      "category": "Stationery & marketing",
+      "swatch": "Flyers",
+      "swatchClass": "product-swatch-flyer",
+      "copy": "Pick a size and sides; the price and the artwork check both follow your choices. This page's options are rendered by Print Options; the upload is inspected by Filecheck against exactly what you selected.",
+      "shows": "Shows: selections drive the check, quantity tiers, double-sided page count",
+      "tags": [
+        "size",
+        "bleed",
+        "DPI",
+        "page count",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Download the A5 sample below and upload it, it passes.",
+        "Click A4. The check re-runs against the new size; same file, now wrong, nothing re-uploaded.",
+        "Switch to double-sided: a one-page file is suddenly incomplete.",
+        "Watch the price follow every change you make."
+      ],
+      "samples": [
+        {
+          "label": "A5 flyer, passes as-is",
+          "href": "/samples/flyer-a5.pdf"
+        },
+        {
+          "label": "Low-res image, DPI warning",
+          "href": "/samples/lowres.png"
+        }
+      ],
+      "blurb": "Size and sides drive both the price and the artwork check.",
+      "pills": [
+        "selections drive the check"
+      ]
+    },
+    "folded-leaflet": {
+      "productId": "demo-folded-leaflet",
+      "config": "/configs/po/demo-folded-leaflet.json",
+      "brand": "Milldale Press",
+      "breadcrumb": "Stationery / Folded leaflets",
+      "title": "Folded leaflet",
+      "category": "Stationery & marketing",
+      "swatch": "Leaflet",
+      "swatchClass": "product-swatch-leaflet",
+      "copy": "Folding is where customer files most often go wrong. Two landscape spreads, always; and the fold you pick sets how much clearance your text needs from the creases.",
+      "shows": "Shows: fold sets the safe zone, exact page count, orientation",
+      "tags": [
+        "size",
+        "bleed",
+        "safe zone",
+        "page count",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Upload the two-page tri-fold sample, it passes.",
+        "Try the one-page file: a leaflet needs both sides, and the finding says so.",
+        "Switch from half fold to tri fold and see the safe zone tighten."
+      ],
+      "samples": [
+        {
+          "label": "Two-spread leaflet, passes",
+          "href": "/samples/leaflet-trifold.pdf"
+        },
+        {
+          "label": "One page only, incomplete",
+          "href": "/samples/leaflet-onepage.pdf"
+        }
+      ],
+      "blurb": "The fold sets how much clearance your text needs from the creases.",
+      "pills": [
+        "fold safe zone",
+        "page count"
+      ]
+    },
+    "stickers": {
+      "productId": "demo-stickers-diecut",
+      "config": "/configs/po/demo-stickers-diecut.json",
+      "brand": "Peel & Stick Co.",
+      "breadcrumb": "Stickers / Die-cut",
+      "title": "Die-cut stickers",
+      "category": "Stationery & marketing",
+      "swatch": "Stickers",
+      "swatchClass": "product-swatch-stickers",
+      "copy": "No size inputs anywhere; the sticker is priced from your artwork's own trim size. Upload something bigger and the price follows. Transparent backgrounds cut best, and we warn when yours isn't.",
+      "shows": "Shows: priced from the file, transparency check, area tiers",
+      "tags": [
+        "priced from file",
+        "area pricing",
+        "transparency",
+        "DPI"
+      ],
+      "tryIt": [
+        "Upload the transparent logo; the detected size drives the price.",
+        "Try the white-background version: same art, but the warning explains what the cutter will see.",
+        "Bump the quantity past 100 and watch the per-sticker rate drop."
+      ],
+      "samples": [
+        {
+          "label": "Transparent logo, cuts clean",
+          "href": "/samples/logo-transparent.png"
+        },
+        {
+          "label": "White background, warns",
+          "href": "/samples/logo-whitebg.png"
+        }
+      ],
+      "blurb": "No size inputs; priced from your artwork's own trim size.",
+      "pills": [
+        "priced from file",
+        "transparency"
+      ]
+    },
+    "thesis": {
+      "productId": "demo-thesis-per-page",
+      "config": "/configs/po/demo-thesis-per-page.json",
+      "brand": "Campus Copy",
+      "breadcrumb": "Documents / Thesis printing",
+      "title": "Thesis printing & binding",
+      "category": "Documents & books",
+      "swatch": "Thesis",
+      "swatchClass": "product-swatch-thesis",
+      "copy": "No page-count dropdowns to fill in. Upload your document and the price is built from what Filecheck finds inside it; total pages, and which of them actually use colour.",
+      "shows": "Shows: priced from the file, colour/mono split, locked PDFs rejected",
+      "tags": [
+        "priced from file",
+        "per-page pricing",
+        "colour split",
+        "fonts",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Upload the 48-page sample; the price breaks down into 12 colour pages and 36 mono pages, each at its own rate.",
+        "Switch to black & white throughout; same file, one flat per-page rate.",
+        "Try the locked PDF: rejected before it can ever jam a print queue."
+      ],
+      "samples": [
+        {
+          "label": "48-page thesis, 12 colour pages",
+          "href": "/samples/thesis-48p-mixed.pdf"
+        },
+        {
+          "label": "Password-protected PDF, rejected",
+          "href": "/samples/thesis-locked.pdf"
+        }
+      ],
+      "blurb": "The price is built from what Filecheck finds inside your document.",
+      "pills": [
+        "colour/mono split"
+      ]
+    },
+    "booklet": {
+      "productId": "demo-booklet-saddle",
+      "config": "/configs/po/demo-booklet-saddle.json",
+      "brand": "Campus Copy",
+      "breadcrumb": "Documents / Booklets",
+      "title": "Saddle-stitched booklet",
+      "category": "Documents & books",
+      "swatch": "Booklet",
+      "swatchClass": "product-swatch-booklet",
+      "copy": "You pick the pagination; the file must honour it; the inner-stock price is computed from the pages actually found in your upload. A wizard walks the whole order through step by step.",
+      "shows": "Shows: wizard layout, page count enforced, per-page stock pricing",
+      "tags": [
+        "page count",
+        "per-page pricing",
+        "priced from file",
+        "size",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Pick 16 pages and upload the 16-page sample; it passes and prices per page.",
+        "Try the 13-page file: saddle stitch needs a multiple of four, and the check enforces the count you picked.",
+        "Switch A5 to A4; the same file is re-judged against the new size."
+      ],
+      "samples": [
+        {
+          "label": "16-page booklet, passes at 16pp",
+          "href": "/samples/booklet-16p.pdf"
+        },
+        {
+          "label": "13 pages, wrong count",
+          "href": "/samples/booklet-13p.pdf"
+        }
+      ],
+      "blurb": "You pick the pagination; the file must honour it. A wizard walks the order.",
+      "pills": [
+        "wizard layout",
+        "per-page stock"
+      ]
+    },
+    "banner": {
+      "productId": "demo-banner-typed-size",
+      "config": "/configs/po/demo-banner-typed-size.json",
+      "brand": "Acme Signs",
+      "breadcrumb": "Large format / Banners",
+      "title": "PVC banner",
+      "category": "Large format",
+      "swatch": "PVC Banner",
+      "swatchClass": "product-swatch-banner",
+      "copy": "Type the finished size, pick a finish; the area price and the artwork check both follow. Hem and eyelets need 25 mm of bleed; trimmed needs 3. The check always knows which one you asked for.",
+      "shows": "Shows: typed size drives the check, finish sets bleed, area tiers",
+      "tags": [
+        "size",
+        "bleed",
+        "safe zone",
+        "DPI",
+        "area pricing"
+      ],
+      "tryIt": [
+        "Upload the 3 × 1 m sample at the default size, it passes.",
+        "Change the width; the same file is re-checked against the new size, nothing re-uploaded.",
+        "Switch finishing from hem-and-eyelets to trimmed and watch the bleed requirement drop from 25 mm to 3."
+      ],
+      "samples": [
+        {
+          "label": "3 × 1 m banner with 25 mm bleed",
+          "href": "/samples/banner-3x1m.pdf"
+        },
+        {
+          "label": "Artwork with no bleed, warns",
+          "href": "/samples/nobleed.pdf"
+        }
+      ],
+      "blurb": "Type the finished size, pick a finish; area price and check both follow.",
+      "pills": [
+        "typed size",
+        "area tiers"
+      ]
+    },
+    "banner-auto": {
+      "productId": "demo-banner-auto-size",
+      "config": "/configs/po/demo-banner-auto-size.json",
+      "brand": "Acme Signs",
+      "breadcrumb": "Large format / Banners",
+      "title": "Banner, priced from your artwork",
+      "category": "Large format",
+      "swatch": "Auto Banner",
+      "swatchClass": "product-swatch-banner",
+      "copy": "The inverse of the classic banner page: no size inputs at all. The upload is the specification. Filecheck measures the trim size and Print Options prices the square metres it reports.",
+      "shows": "Shows: the upload sets the price, area tier breaks, DPI at real size",
+      "tags": [
+        "priced from file",
+        "area pricing",
+        "bleed",
+        "DPI"
+      ],
+      "tryIt": [
+        "Upload the 3 × 1 m banner, 4.5 m² priced at the small-run rate.",
+        "Now the 4.5 × 1.8 m one: 8.1 m² crosses the tier break and the rate per square metre drops.",
+        "There is nothing else to fill in. That is the point."
+      ],
+      "samples": [
+        {
+          "label": "3 × 1 m banner",
+          "href": "/samples/banner-3x1m.pdf"
+        },
+        {
+          "label": "4.5 × 1.8 m, crosses the tier",
+          "href": "/samples/banner-large.pdf"
+        }
+      ],
+      "blurb": "No size inputs at all; the upload is the specification.",
+      "pills": [
+        "upload sets price"
+      ]
+    },
+    "poster": {
+      "productId": "demo-poster-classic",
+      "config": "/configs/po/demo-poster-classic.json",
+      "brand": "Acme Signs",
+      "breadcrumb": "Large format / Posters",
+      "title": "Custom size poster",
+      "category": "Large format",
+      "swatch": "Poster",
+      "swatchClass": "product-swatch-poster",
+      "copy": "The two products staying in their lanes: the price comes from the size you type, never from the file; while Filecheck judges whether your artwork is actually sharp enough at that size.",
+      "shows": "Shows: DPI is relative to print size, dimensions pricing, price floor",
+      "tags": [
+        "size",
+        "DPI",
+        "bleed",
+        "area pricing"
+      ],
+      "tryIt": [
+        "Upload the low-res image at the default 50 × 70 cm, borderline.",
+        "Grow the poster to 100 × 150 cm: same file, now clearly not sharp enough. Resolution is relative.",
+        "Upload the A1 sample and shrink the size, suddenly everything passes."
+      ],
+      "samples": [
+        {
+          "label": "A1 poster with bleed, passes",
+          "href": "/samples/poster-a1.pdf"
+        },
+        {
+          "label": "Low-res image, fails when big",
+          "href": "/samples/lowres.png"
+        }
+      ],
+      "blurb": "Price from the size you type; sharpness judged against it.",
+      "pills": [
+        "DPI vs print size"
+      ]
+    },
+    "rollup": {
+      "productId": "demo-rollup-stand",
+      "config": "/configs/po/demo-rollup-stand.json",
+      "brand": "Acme Signs",
+      "breadcrumb": "Large format / Displays",
+      "title": "Roll-up banner stand",
+      "category": "Large format",
+      "swatch": "Roll-up",
+      "swatchClass": "product-swatch-rollup",
+      "copy": "A fixed-size product with hardware; and a trap: the visible area is 850 × 2000 mm, but the file must be 850 × 2150 because the bottom 150 mm disappears into the cassette.",
+      "shows": "Shows: fixed template, the cassette tail, hardware add-ons",
+      "tags": [
+        "size",
+        "safe zone",
+        "DPI",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Upload the correct file (with the tail), it passes.",
+        "Now the classic mistake: artwork sized to the visible 2000 mm. Rejected, with a finding that explains the tail.",
+        "Nothing on this page changes the check; not every product needs the bridge."
+      ],
+      "samples": [
+        {
+          "label": "850 × 2150 with tail, correct",
+          "href": "/samples/rollup-correct.pdf"
+        },
+        {
+          "label": "850 × 2000, missing the tail",
+          "href": "/samples/rollup-2000.pdf"
+        }
+      ],
+      "blurb": "Visible 850 × 2000 mm, file 850 × 2150; the tail hides in the cassette.",
+      "pills": [
+        "fixed template",
+        "hardware"
+      ]
+    },
+    "tshirt": {
+      "productId": "demo-tshirt-dtg",
+      "config": "/configs/po/demo-tshirt-dtg.json",
+      "brand": "Inkbird Apparel",
+      "breadcrumb": "Apparel / T-shirts",
+      "title": "Printed t-shirt",
+      "category": "Apparel & merch",
+      "swatch": "T-shirt",
+      "swatchClass": "product-swatch-tshirt",
+      "copy": "Raster-first checking: a flat white background will print as a white box on the shirt, and we warn before it does. Resolution is judged at the chest-print size you pick, and dark garments add an underbase.",
+      "shows": "Shows: background warning, DPI at print size, garment options",
+      "tags": [
+        "transparency",
+        "DPI",
+        "size",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Upload the white-background logo; the warning explains what will actually print.",
+        "Swap in the transparent version: same art, clean pass.",
+        "Switch A4 chest to A3 full front; the resolution target follows the print size."
+      ],
+      "samples": [
+        {
+          "label": "Transparent logo, prints clean",
+          "href": "/samples/logo-transparent.png"
+        },
+        {
+          "label": "White background, warns",
+          "href": "/samples/logo-whitebg.png"
+        }
+      ],
+      "blurb": "A flat white background prints as a white box; we warn before it does.",
+      "pills": [
+        "background warning"
+      ]
+    },
+    "mug": {
+      "productId": "demo-mug-wrap",
+      "config": "/configs/po/demo-mug-wrap.json",
+      "brand": "Inkbird Apparel",
+      "breadcrumb": "Merch / Drinkware",
+      "title": "Wrap-print mug",
+      "category": "Apparel & merch",
+      "swatch": "Mug",
+      "swatchClass": "product-swatch-mug",
+      "copy": "Template products: the artwork must fit a physical wrap. Picking the bigger mug changes the template the same file is checked against; and the handle keep-out never moves.",
+      "shows": "Shows: template follows the mug, aspect ratio, handle keep-out",
+      "tags": [
+        "size",
+        "safe zone",
+        "DPI",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Upload the 11 oz wrap; it matches the template exactly.",
+        "Switch to the 15 oz mug: template mismatch appears instantly, no re-upload.",
+        "Try the square image; a 40:17 wrap and a 1:1 file were never going to agree."
+      ],
+      "samples": [
+        {
+          "label": "11 oz wrap template, passes",
+          "href": "/samples/mug-wrap-11oz.pdf"
+        },
+        {
+          "label": "Square image, wrong aspect",
+          "href": "/samples/mug-square.png"
+        }
+      ],
+      "blurb": "The artwork must fit a physical wrap; the handle keep-out never moves.",
+      "pills": [
+        "template",
+        "keep-out"
+      ]
+    },
+    "canvas": {
+      "productId": "demo-canvas-print",
+      "config": "/configs/po/demo-canvas-print.json",
+      "brand": "Inkbird Apparel",
+      "breadcrumb": "Wall art / Canvas",
+      "title": "Photo canvas",
+      "category": "Apparel & merch",
+      "swatch": "Canvas",
+      "swatchClass": "product-swatch-canvas",
+      "copy": "A consumer photo product with a hidden physical requirement: gallery wrap folds the photo around the frame, which needs 38 mm of extra image on every side. Mirror wrap needs none. The check knows which you picked.",
+      "shows": "Shows: wrap sets the bleed, DPI vs frame size, forgiving thresholds",
+      "tags": [
+        "bleed",
+        "DPI",
+        "size",
+        "cart gating"
+      ],
+      "tryIt": [
+        "Upload the portrait photo on the 30 × 40 frame, passes, canvas is forgiving.",
+        "Pick 60 × 90 with gallery wrap: two findings, in plain language; resolution and missing wrap allowance.",
+        "Switch to mirror wrap and the bleed requirement disappears."
+      ],
+      "samples": [
+        {
+          "label": "Portrait photo, fits 30 × 40",
+          "href": "/samples/photo-3x4.png"
+        },
+        {
+          "label": "Panorama, wrong shape for a portrait frame",
+          "href": "/samples/photo-pano.png"
+        }
+      ],
+      "blurb": "Gallery wrap folds 38 mm around every side; mirror wrap needs none.",
+      "pills": [
+        "wrap sets bleed"
+      ]
+    }
+  }
+}

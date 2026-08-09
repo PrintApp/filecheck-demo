@@ -4,8 +4,8 @@ A static product-page demo for the [Filecheck Element](https://github.com/PrintA
 
 Two integration modes:
 
-- **Inline**     — element mounted directly above the *Add to Cart* button
-- **Modal**      — same element, opened on demand inside a `<dialog>` overlay
+- **Inline**    ; element mounted directly above the *Add to Cart* button
+- **Modal**     ; same element, opened on demand inside a `<dialog>` overlay
 
 Both modes load the element exactly the way a real tenant does:
 
@@ -27,5 +27,5 @@ pnpm dev:demo                                # http://localhost:5174
 
 The element's iframe defaults to the production client
 (`https://cdn.filecheck.io/client/v1/`). In dev mode the demo overrides
-`iframeSrc` to `http://localhost:8010/` — start the client app with
+`iframeSrc` to `http://localhost:8010/`; start the client app with
 `pnpm dev:client` if you want to iterate on the iframe UI as well.

@@ -1,0 +1,378 @@
+{
+  "version": "2.0",
+  "productId": "demo-stickers-diecut",
+  "title": "Die-cut stickers",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    },
+    "minimumPrice": 20
+  },
+  "sections": [
+    {
+      "id": "artwork",
+      "title": "Your artwork - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your sticker artwork",
+          "helpText": "The sticker is priced from your artwork’s own trim size, no dimensions to type. Transparent backgrounds cut best.",
+          "required": true,
+          "accept": [
+            "application/pdf",
+            "image/png",
+            "image/tiff"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Die-cut stickers demo",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Sticker checks; the canvas the file reports drives the area price.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_stickers",
+                        "schemaVersion": 1,
+                        "description": "Die-cut sticker checks",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 1,
+                                  "tolerance_mm": 0.5,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 300
+                                }
+                              },
+                              "raster.background_removal": {
+                                "id": "raster.background_removal",
+                                "enabled": true,
+                                "severity": "warn"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  },
+                  {
+                    "kind": "raster",
+                    "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/tiff"
+                    ],
+                    "extensions": [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "tif",
+                      "tiff"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_stickers",
+                        "schemaVersion": 1,
+                        "description": "Die-cut sticker checks",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 1,
+                                  "tolerance_mm": 0.5,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 300
+                                }
+                              },
+                              "raster.background_removal": {
+                                "id": "raster.background_removal",
+                                "enabled": true,
+                                "severity": "warn"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your sticker artwork"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "size-readout",
+          "type": "info",
+          "display": "summary",
+          "label": "Detected size",
+          "visibleWhen": {
+            "all": [
+              {
+                "ref": "file.status",
+                "op": "eq",
+                "value": "ready"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "material",
+      "title": "Material & cut",
+      "fields": [
+        {
+          "id": "material",
+          "type": "select-one",
+          "display": "list",
+          "label": "Material",
+          "role": "material",
+          "required": true,
+          "options": [
+            {
+              "id": "white-vinyl",
+              "label": "White vinyl",
+              "default": true,
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 120,
+                  "areaUnit": "sqm",
+                  "tiers": {
+                    "basis": "quantity",
+                    "mode": "flat",
+                    "rows": [
+                      {
+                        "upTo": 99,
+                        "amount": 120
+                      },
+                      {
+                        "upTo": 499,
+                        "amount": 90
+                      },
+                      {
+                        "amount": 70
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "clear-vinyl",
+              "label": "Clear vinyl",
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 140,
+                  "areaUnit": "sqm",
+                  "tiers": {
+                    "basis": "quantity",
+                    "mode": "flat",
+                    "rows": [
+                      {
+                        "upTo": 99,
+                        "amount": 140
+                      },
+                      {
+                        "upTo": 499,
+                        "amount": 105
+                      },
+                      {
+                        "amount": 80
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "holographic",
+              "label": "Holographic",
+              "priceModifiers": [
+                {
+                  "type": "perArea",
+                  "amount": 180,
+                  "areaUnit": "sqm",
+                  "tiers": {
+                    "basis": "quantity",
+                    "mode": "flat",
+                    "rows": [
+                      {
+                        "upTo": 99,
+                        "amount": 180
+                      },
+                      {
+                        "upTo": 499,
+                        "amount": 140
+                      },
+                      {
+                        "amount": 110
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cut",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Cut",
+          "required": true,
+          "options": [
+            {
+              "id": "kiss",
+              "label": "Kiss cut",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "die",
+              "label": "Die cut",
+              "description": "Cut through the backing, one-off die charge.",
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 15
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quantity",
+      "title": "Quantity",
+      "fields": [
+        {
+          "id": "qty",
+          "type": "quantity",
+          "display": "stepper",
+          "label": "How many stickers?",
+          "min": 10,
+          "defaultValue": 50
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

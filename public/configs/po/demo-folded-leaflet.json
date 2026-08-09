@@ -1,0 +1,320 @@
+{
+  "version": "2.0",
+  "productId": "demo-folded-leaflet",
+  "title": "Folded leaflet",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    }
+  },
+  "sections": [
+    {
+      "id": "fold",
+      "title": "Fold",
+      "fields": [
+        {
+          "id": "fold",
+          "type": "select-one",
+          "display": "cards",
+          "label": "Fold style",
+          "required": true,
+          "options": [
+            {
+              "id": "half",
+              "label": "Half fold",
+              "description": "A4 folded once to A5.",
+              "default": true,
+              "priceModifiers": [],
+              "filecheck": {
+                "context": {
+                  "safety": {
+                    "min_mm": 5
+                  }
+                }
+              }
+            },
+            {
+              "id": "tri",
+              "label": "Tri fold",
+              "description": "Folded twice to DL; keep text clear of the folds.",
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 12
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "safety": {
+                    "min_mm": 8
+                  }
+                }
+              }
+            },
+            {
+              "id": "z",
+              "label": "Z fold",
+              "description": "Accordion fold to DL.",
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 12
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "safety": {
+                    "min_mm": 8
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your artwork - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your leaflet (2 pages)",
+          "helpText": "One landscape A4 page per side: outer spread first, inner spread second. The fold you picked sets how much clearance your text needs.",
+          "required": true,
+          "accept": [
+            "application/pdf"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Folded leaflet demo",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Leaflet checks; fold sets the safe zone.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_leaflet",
+                        "schemaVersion": 1,
+                        "description": "Folded leaflet checks",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 297,
+                                      "height_mm": 210
+                                    }
+                                  ],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.page_count": {
+                                "id": "geom.page_count",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "min": 2,
+                                  "max": 2,
+                                  "allowed": []
+                                }
+                              },
+                              "geom.orientation": {
+                                "id": "geom.orientation",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "allowed": "landscape"
+                                }
+                              },
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 3,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              },
+                              "geom.safety_margin": {
+                                "id": "geom.safety_margin",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_mm": 5
+                                }
+                              }
+                            }
+                          },
+                          "text": {
+                            "id": "text",
+                            "enabled": true,
+                            "rules": {
+                              "text.fonts_embedded": {
+                                "id": "text.fonts_embedded",
+                                "enabled": true,
+                                "severity": "warn"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your leaflet artwork"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "paper",
+      "title": "Paper & quantity",
+      "fields": [
+        {
+          "id": "paper",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Paper",
+          "role": "material",
+          "required": true,
+          "options": [
+            {
+              "id": "silk-130",
+              "label": "130 gsm silk",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "silk-170",
+              "label": "170 gsm silk",
+              "priceModifiers": [
+                {
+                  "type": "percent",
+                  "amount": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "copies",
+          "type": "quantity",
+          "display": "pills",
+          "label": "How many?",
+          "min": 50,
+          "defaultValue": 100,
+          "presets": [
+            100,
+            250,
+            500,
+            1000
+          ],
+          "priceModifiers": [
+            {
+              "type": "perUnit",
+              "amount": 0.32,
+              "tiers": {
+                "basis": "quantity",
+                "mode": "flat",
+                "rows": [
+                  {
+                    "upTo": 249,
+                    "amount": 0.32
+                  },
+                  {
+                    "upTo": 999,
+                    "amount": 0.22
+                  },
+                  {
+                    "amount": 0.16
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

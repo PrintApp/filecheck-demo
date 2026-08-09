@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Filecheck — Live demos</title>
-    <meta name="description" content="Live, working examples of Filecheck checking customer artwork on a real product page." />
+    <title>Filecheck · Live demos</title>
+    <meta name="description" content="Live, working examples of Filecheck checking customer artwork on real product pages; with prices computed by Print Options from what it finds." />
     <link rel="stylesheet" href="/src/styles.css" />
     <link rel="icon" type="image/png" href="/icon.png" />
     <script src="/demo.js"></script>
@@ -18,108 +18,262 @@
         </nav>
     </header>
 
-    <main class="landing">
-        <section class="landing-hero">
-            <h1>See it check a real file</h1>
-            <p class="lede">
-                Each page below is a working shop page with Filecheck on it. Upload
-                something — a good PDF, a bad one, the wrong size — and watch what
-                happens. Nothing is mocked; these run against the live service.
+    <div class="landing-shell">
+        <aside class="landing-side">
+            <h1 class="side-hero">See it check <span class="u-red">a</span><br /><span class="u-amber">real file</span></h1>
+            <p class="side-lede">
+                Working shop pages with Filecheck on them. Upload a good PDF,
+                a bad one, the wrong size, and watch.
             </p>
-        </section>
 
-        <section class="demo-grid">
-            <a class="demo-card" href="/business-cards.html">
-                <span class="demo-card-kicker">Stationery</span>
-                <h2>Business cards</h2>
-                <p>
-                    The standard setup: a product page with an uploader, and an
-                    Add&nbsp;to&nbsp;Cart button that stays disabled until the
-                    artwork passes.
-                </p>
-                <span class="demo-card-shows">Shows: intake, cart gating, auto-mount</span>
-            </a>
+            <p class="side-label">Sections</p>
+            <nav class="side-nav" data-side-nav aria-label="Demo sections"></nav>
 
-            <a class="demo-card" href="/pvc-banner.html">
-                <span class="demo-card-kicker">Large format</span>
-                <h2>PVC banner</h2>
-                <p>
-                    The customer types their own size, in their own units, and picks
-                    a finish. The artwork is checked against <em>that</em> banner —
-                    not a size baked in months ago.
-                </p>
-                <span class="demo-card-shows">Shows: size read from the page, two-way sync, finish&nbsp;→&nbsp;bleed</span>
-            </a>
+            <p class="side-label">Filter by check</p>
+            <div class="side-chips" data-chip-row>
+                <button type="button" class="chip" data-tag="size">size</button>
+                <button type="button" class="chip" data-tag="bleed">bleed</button>
+                <button type="button" class="chip" data-tag="safe zone">safe zone</button>
+                <button type="button" class="chip" data-tag="DPI">DPI</button>
+                <button type="button" class="chip" data-tag="page count">page count</button>
+                <button type="button" class="chip" data-tag="transparency">transparency</button>
+                <button type="button" class="chip" data-tag="fonts">fonts</button>
+                <button type="button" class="chip" data-tag="priced from file">priced from file</button>
+                <button type="button" class="chip" data-tag="cart gating">cart gating</button>
+            </div>
+        </aside>
 
-            <a class="demo-card" href="/brochure.html">
-                <span class="demo-card-kicker">Print</span>
-                <h2>Folded brochure</h2>
-                <p>
-                    Page count comes from what the customer ordered. A 4-page
-                    brochure demands four pages; switch to 8 and the same file is
-                    suddenly wrong.
-                </p>
-                <span class="demo-card-shows">Shows: page count read from the page, single vs double sided</span>
-            </a>
+        <main class="landing-main">
+            <div id="catalog-sections">
+                <noscript><p>The demo catalog needs JavaScript. All demos are also reachable at <a href="/shop.html">shop.html</a>.</p></noscript>
+            </div>
 
-            <a class="demo-card" href="/freetool.html">
-                <span class="demo-card-kicker">Free tool</span>
-                <h2>Preflight checker</h2>
-                <p>
-                    A multi-file drop zone beside a live report. Click any file to
-                    read its findings. This is the recipe the filecheck.io tools
-                    pages are built from.
-                </p>
-                <span class="demo-card-shows">Shows: list-mode intake, report element, inline workflow</span>
-            </a>
-
-            <a class="demo-card" href="/report.html">
-                <span class="demo-card-kicker">Post-purchase</span>
-                <h2>Order report</h2>
-                <p>
-                    The read-only report for a finished job — what you'd show a
-                    customer on their order page, or an operator in a dashboard.
-                </p>
-                <span class="demo-card-shows">Shows: report element, fetch mode</span>
-            </a>
-        </section>
-
-        <section class="key-panel">
-            <h2>Try it with your own workflow</h2>
-            <p>
-                By default these run on our demo tenant. Paste your own publishable
-                key and every demo on this site will use it — no need to add
-                <code>?pk=</code> to each page.
-                <span class="key-badge" data-fc-key-badge hidden></span>
-            </p>
-            <form class="key-form" data-fc-key-form>
-                <label>
-                    Publishable key
-                    <input name="pk" type="text" placeholder="pk_live_…" autocomplete="off" spellcheck="false" />
-                </label>
-                <label>
-                    Workflow id <span class="key-optional">(optional)</span>
-                    <input name="workflow" type="text" placeholder="wf_…" autocomplete="off" spellcheck="false" />
-                </label>
-                <div class="key-actions">
-                    <button type="submit" class="btn-primary">Use this key</button>
-                    <button type="button" class="btn-quiet" data-fc-key-reset>Reset to demo tenant</button>
+            <section class="cat-section" id="section-patterns" data-section data-section-title="Integration patterns">
+                <div class="cat-head">
+                    <h2>Integration patterns</h2>
+                    <span class="cat-byline">Under 20 lines each, view source</span>
                 </div>
-            </form>
-            <p class="key-note">
-                Stored in this browser only. The demos that ship their own inline
-                workflow ignore the workflow id — they carry their rules with them
-                so there is nothing to configure.
-            </p>
-        </section>
-    </main>
+                <div class="cat-rows">
+                    <a class="cat-row" href="/pvc-banner.html" data-tags="size|bleed">
+                        <span class="row-id">
+                            <span class="row-kicker">Hand-wired</span>
+                            <span class="row-title">PVC banner</span>
+                        </span>
+                        <span class="row-desc">A connector reads the shop's own size inputs and writes the measured size back.</span>
+                        <span class="row-pills"><span class="pill">two-way sync</span></span>
+                    </a>
+                    <a class="cat-row" href="/business-cards.html" data-tags="cart gating">
+                        <span class="row-id">
+                            <span class="row-kicker">Hand-wired</span>
+                            <span class="row-title">Business cards</span>
+                        </span>
+                        <span class="row-desc">An uploader and an Add to Cart button that stays disabled until the artwork passes.</span>
+                        <span class="row-pills"><span class="pill">cart gating</span></span>
+                    </a>
+                    <a class="cat-row" href="/brochure.html" data-tags="page count">
+                        <span class="row-id">
+                            <span class="row-kicker">Hand-wired</span>
+                            <span class="row-title">Folded brochure</span>
+                        </span>
+                        <span class="row-desc">Switch four pages to eight and the same file is suddenly wrong.</span>
+                        <span class="row-pills"><span class="pill">page count</span></span>
+                    </a>
+                    <a class="cat-row row-green" href="/freetool.html" data-tags="">
+                        <span class="row-id">
+                            <span class="row-kicker">Free tool</span>
+                            <span class="row-title">Preflight checker</span>
+                        </span>
+                        <span class="row-desc">A multi-file drop zone beside a live report, the filecheck.io tools recipe.</span>
+                        <span class="row-pills"><span class="pill">report element</span></span>
+                    </a>
+                    <a class="cat-row" href="/report.html" data-tags="">
+                        <span class="row-id">
+                            <span class="row-kicker">Post-purchase</span>
+                            <span class="row-title">Order report</span>
+                        </span>
+                        <span class="row-desc">The read-only report for a finished job, order page or dashboard.</span>
+                        <span class="row-pills"><span class="pill">fetch mode</span></span>
+                    </a>
+                </div>
+            </section>
 
-    <footer class="demo-footer">
+            <section class="key-strip">
+                <div class="key-strip-copy">
+                    <h2>Try it with your own workflow</h2>
+                    <p>
+                        Paste a publishable key and every demo here uses it.
+                        Stored in this browser only.
+                        <span class="key-badge" data-fc-key-badge hidden></span>
+                    </p>
+                </div>
+                <form class="key-strip-form" data-fc-key-form>
+                    <input name="pk" type="text" placeholder="pk_live_…" autocomplete="off" spellcheck="false" aria-label="Publishable key" />
+                    <button type="submit" class="btn-key">Use this key</button>
+                    <button type="button" class="key-reset" data-fc-key-reset>Reset</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <footer class="landing-footer">
         <p>
-            These pages are also the reference integrations in the Filecheck repo —
-            view source on any of them and you'll see the whole integration, usually
-            under 20 lines.
+            These pages are also the reference integrations in the Filecheck repo
+           ; verified against the live pricing engine before they ship.
         </p>
     </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var sectionsEl = document.getElementById('catalog-sections');
+        var sideNav = document.querySelector('[data-side-nav]');
+
+        function el(tag, className, text) {
+            var node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text !== undefined) node.textContent = text;
+            return node;
+        }
+
+        function row(slug, entry) {
+            var a = el('a', 'cat-row');
+            a.href = '/shop.html?product=' + encodeURIComponent(slug);
+            a.dataset.tags = (entry.tags || []).join('|');
+            var id = el('span', 'row-id');
+            id.appendChild(el('span', 'row-kicker', entry.brand));
+            id.appendChild(el('span', 'row-title', entry.title));
+            a.appendChild(id);
+            a.appendChild(el('span', 'row-desc', entry.blurb || entry.copy));
+            var pills = el('span', 'row-pills');
+            (entry.pills || []).forEach(function (p) { pills.appendChild(el('span', 'pill', p)); });
+            a.appendChild(pills);
+            return a;
+        }
+
+        fetch('/catalog.json')
+            .then(function (res) { return res.json(); })
+            .then(function (catalog) {
+                var byCategory = {};
+                Object.keys(catalog.products).forEach(function (slug) {
+                    var entry = catalog.products[slug];
+                    (byCategory[entry.category] = byCategory[entry.category] || []).push([slug, entry]);
+                });
+
+                (catalog.categories || Object.keys(byCategory)).forEach(function (category, i) {
+                    var entries = byCategory[category];
+                    if (!entries) return;
+
+                    var brands = [];
+                    entries.forEach(function (pair) {
+                        if (brands.indexOf(pair[1].brand) === -1) brands.push(pair[1].brand);
+                    });
+
+                    var section = el('section', 'cat-section');
+                    section.id = 'section-' + i;
+                    section.dataset.section = '';
+                    section.dataset.sectionTitle = category;
+
+                    var head = el('div', 'cat-head');
+                    head.appendChild(el('h2', null, category));
+                    head.appendChild(el('span', 'cat-byline', brands.join(' · ')));
+                    section.appendChild(head);
+
+                    var rows = el('div', 'cat-rows');
+                    entries.forEach(function (pair) { rows.appendChild(row(pair[0], pair[1])); });
+                    section.appendChild(rows);
+                    sectionsEl.appendChild(section);
+                });
+
+                buildSideNav();
+                wireChips();
+                wireScrollSpy();
+            })
+            .catch(function (err) {
+                sectionsEl.appendChild(el('p', 'side-lede', 'Could not load the demo catalog: ' + err));
+            });
+
+        function sections() {
+            return Array.prototype.slice.call(document.querySelectorAll('[data-section]'));
+        }
+
+        function buildSideNav() {
+            sections().forEach(function (section) {
+                var a = el('a', 'side-link');
+                a.href = '#' + section.id;
+                a.appendChild(el('span', 'side-link-title', section.dataset.sectionTitle));
+                a.appendChild(el('span', 'side-link-count'));
+                sideNav.appendChild(a);
+            });
+            updateCounts();
+        }
+
+        function updateCounts() {
+            var links = sideNav.querySelectorAll('.side-link');
+            sections().forEach(function (section, i) {
+                var visible = section.querySelectorAll('.cat-row:not([hidden])').length;
+                var link = links[i];
+                if (!link) return;
+                link.querySelector('.side-link-count').textContent =
+                    String(visible).padStart(2, '0');
+                link.classList.toggle('is-empty', visible === 0);
+            });
+        }
+
+        /* Chip filter. REMOVES non-matching rows from the flow entirely
+           (hidden attribute), and collapses sections left with nothing, so
+           filtered results read as one short list instead of a field of
+           dimmed cards to scroll past. Click the active chip to clear. */
+        function wireChips() {
+            var chips = document.querySelectorAll('[data-chip-row] .chip');
+            var active = null;
+
+            function apply() {
+                sections().forEach(function (section) {
+                    var any = false;
+                    section.querySelectorAll('.cat-row').forEach(function (rowEl) {
+                        var tags = (rowEl.dataset.tags || '').split('|');
+                        var show = !active || tags.indexOf(active) !== -1;
+                        rowEl.hidden = !show;
+                        if (show) any = true;
+                    });
+                    section.hidden = !any;
+                });
+                chips.forEach(function (chip) {
+                    chip.classList.toggle('is-active', chip.dataset.tag === active);
+                });
+                updateCounts();
+            }
+
+            chips.forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    active = active === chip.dataset.tag ? null : chip.dataset.tag;
+                    apply();
+                });
+            });
+        }
+
+        /* Scroll spy: highlight the section currently at the top of the
+           viewport. Cheap on-scroll scan, five sections, no observer
+           bookkeeping needed. */
+        function wireScrollSpy() {
+            var links = sideNav.querySelectorAll('.side-link');
+
+            function update() {
+                var offset = window.scrollY + 120;
+                var current = 0;
+                sections().forEach(function (section, i) {
+                    if (!section.hidden && section.offsetTop <= offset) current = i;
+                });
+                links.forEach(function (link, i) {
+                    link.classList.toggle('is-current', i === current);
+                });
+            }
+
+            window.addEventListener('scroll', update, { passive: true });
+            update();
+        }
+    })();
+    </script>
 </body>
 </html>

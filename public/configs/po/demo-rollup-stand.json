@@ -1,0 +1,313 @@
+{
+  "version": "2.0",
+  "productId": "demo-rollup-stand",
+  "title": "Roll-up banner stand",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    }
+  },
+  "sections": [
+    {
+      "id": "stand",
+      "title": "Stand",
+      "fields": [
+        {
+          "id": "stand",
+          "type": "select-one",
+          "display": "cards",
+          "label": "Hardware",
+          "required": true,
+          "options": [
+            {
+              "id": "standard",
+              "label": "Standard stand",
+              "description": "Aluminium cassette, carry bag not included.",
+              "default": true,
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 45
+                }
+              ]
+            },
+            {
+              "id": "premium",
+              "label": "Premium stand",
+              "description": "Wide base, swappable cassette.",
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 65
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your artwork - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your roll-up artwork (850 × 2150 mm)",
+          "helpText": "The visible area is 850 × 2000 mm; the bottom 150 mm disappears into the cassette, so your file must be 850 × 2150 mm with nothing important in the tail.",
+          "required": true,
+          "accept": [
+            "application/pdf",
+            "image/jpeg",
+            "image/png",
+            "image/tiff"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Roll-up stand demo",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Roll-up checks; a fixed template with a cassette tail.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_rollup",
+                        "schemaVersion": 1,
+                        "description": "Roll-up checks; exact template, tail included",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 850,
+                                      "height_mm": 2150
+                                    }
+                                  ],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.safety_margin": {
+                                "id": "geom.safety_margin",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_mm": 30
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 100,
+                                  "target_width_mm": 850,
+                                  "target_height_mm": 2150
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  },
+                  {
+                    "kind": "raster",
+                    "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/tiff"
+                    ],
+                    "extensions": [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "tif",
+                      "tiff"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_rollup",
+                        "schemaVersion": 1,
+                        "description": "Roll-up checks; exact template, tail included",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 850,
+                                      "height_mm": 2150
+                                    }
+                                  ],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.safety_margin": {
+                                "id": "geom.safety_margin",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_mm": 30
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 100,
+                                  "target_width_mm": 850,
+                                  "target_height_mm": 2150
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your roll-up artwork"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "extras",
+      "title": "Extras & quantity",
+      "fields": [
+        {
+          "id": "bag",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Carry bag",
+          "required": true,
+          "options": [
+            {
+              "id": "none",
+              "label": "No bag",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "bag",
+              "label": "Padded carry bag",
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "qty",
+          "type": "quantity",
+          "display": "stepper",
+          "label": "How many stands?",
+          "min": 1,
+          "defaultValue": 1
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

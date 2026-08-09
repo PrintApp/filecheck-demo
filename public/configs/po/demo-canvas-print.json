@@ -1,0 +1,344 @@
+{
+  "version": "2.0",
+  "productId": "demo-canvas-print",
+  "title": "Photo canvas",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    }
+  },
+  "sections": [
+    {
+      "id": "frame",
+      "title": "Your canvas",
+      "fields": [
+        {
+          "id": "frame",
+          "type": "select-one",
+          "display": "cards",
+          "label": "Size",
+          "role": "size",
+          "required": true,
+          "options": [
+            {
+              "id": "f3040",
+              "label": "30 × 40 cm",
+              "default": true,
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 29
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "artworkSize": {
+                    "width_mm": 300,
+                    "height_mm": 400
+                  }
+                }
+              }
+            },
+            {
+              "id": "f5070",
+              "label": "50 × 70 cm",
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 49
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "artworkSize": {
+                    "width_mm": 500,
+                    "height_mm": 700
+                  }
+                }
+              }
+            },
+            {
+              "id": "f6090",
+              "label": "60 × 90 cm",
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 69
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "artworkSize": {
+                    "width_mm": 600,
+                    "height_mm": 900
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "wrap",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Edge",
+          "required": true,
+          "options": [
+            {
+              "id": "gallery",
+              "label": "Gallery wrap",
+              "description": "The photo folds around the frame and needs 38 mm extra on every side.",
+              "default": true,
+              "priceModifiers": [],
+              "filecheck": {
+                "context": {
+                  "bleed": {
+                    "required_mm": 38
+                  }
+                }
+              }
+            },
+            {
+              "id": "mirror",
+              "label": "Mirror wrap",
+              "description": "Edges are mirrored, no extra image needed.",
+              "priceModifiers": [],
+              "filecheck": {
+                "context": {
+                  "bleed": {
+                    "required_mm": 0
+                  }
+                }
+              }
+            },
+            {
+              "id": "white",
+              "label": "White edge",
+              "priceModifiers": [],
+              "filecheck": {
+                "context": {
+                  "bleed": {
+                    "required_mm": 0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your photo - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your photo",
+          "helpText": "Canvas is forgiving. 100 dpi at print size looks great. We check your photo against the frame size and edge style you picked.",
+          "required": true,
+          "accept": [
+            "image/jpeg",
+            "image/png",
+            "application/pdf"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Photo canvas demo",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Canvas checks; resolution and wrap bleed follow the frame.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_canvas_pdf",
+                        "schemaVersion": 1,
+                        "description": "Canvas checks; size and wrap bleed",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 300,
+                                      "height_mm": 400
+                                    }
+                                  ],
+                                  "tolerance_mm": 10,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 38,
+                                  "tolerance_mm": 2,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 100,
+                                  "target_width_mm": 300,
+                                  "target_height_mm": 400
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  },
+                  {
+                    "kind": "raster",
+                    "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/tiff"
+                    ],
+                    "extensions": [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "tif",
+                      "tiff"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_canvas_raster",
+                        "schemaVersion": 1,
+                        "description": "Canvas checks; resolution at frame size",
+                        "sections": {
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 100,
+                                  "target_width_mm": 300,
+                                  "target_height_mm": 400
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your photo"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "quantity",
+      "title": "Quantity",
+      "fields": [
+        {
+          "id": "qty",
+          "type": "quantity",
+          "display": "stepper",
+          "label": "How many canvases?",
+          "min": 1,
+          "defaultValue": 1
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

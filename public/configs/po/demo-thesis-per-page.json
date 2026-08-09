@@ -1,0 +1,245 @@
+{
+  "version": "2.0",
+  "productId": "demo-thesis-per-page",
+  "title": "Thesis printing & binding",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": { "amount": 4.5, "per": "order" }
+  },
+  "sections": [
+    {
+      "id": "printing",
+      "title": "Printing",
+      "fields": [
+        {
+          "id": "colour-mode",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Colour",
+          "required": true,
+          "options": [
+            {
+              "id": "mono-only",
+              "label": "Black & white throughout",
+              "default": true,
+              "priceModifiers": [{ "type": "perPage", "amount": 0.05 }]
+            },
+            {
+              "id": "auto-detect",
+              "label": "Colour pages where my file has colour",
+              "description": "Charged per detected colour page; the rest print mono.",
+              "priceModifiers": [
+                { "type": "perColorPage", "amount": 0.18 },
+                { "type": "perMonoPage", "amount": 0.05 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sides",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Printing",
+          "required": true,
+          "options": [
+            { "id": "single", "label": "Single-sided", "default": true, "priceModifiers": [] },
+            {
+              "id": "double",
+              "label": "Double-sided",
+              "description": "Fewer sheets; cheaper, and half the shelf width.",
+              "priceModifiers": [{ "type": "multiplier", "amount": 0.62 }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your document - Filecheck",
+      "fields": [
+        {
+          "id": "document",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your thesis (PDF)",
+          "helpText": "We read the page count and colour pages straight out of your file; the price is built from what we find. Binding and copies below.",
+          "required": true,
+          "accept": ["application/pdf"],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Thesis demo, priced from the file",
+              "trigger": "order_placed",
+              "intake": { "ruleId": null, "onError": "halt", "enabled": true },
+              "streams": [],
+              "merge": { "mode": "none", "config": {}, "onError": "halt", "enabled": true },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": { "enabled": false, "destinationIds": [] },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Thesis demo inline rule; document checks; the page facts it reports drive the per-page pricing.",
+                "cardinality": { "min": 1, "max": 1, "slots": [] },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": ["application/pdf"],
+                    "extensions": ["pdf"],
+                    "maxSize": 200000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_thesis",
+                        "schemaVersion": 1,
+                        "description": "Document checks for print-and-bind jobs",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "allowed": [{ "width_mm": 210, "height_mm": 297 }],
+                                  "tolerance_mm": 2,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.consistent_page_sizes": {
+                                "id": "geom.consistent_page_sizes",
+                                "enabled": true,
+                                "severity": "warn"
+                              }
+                            }
+                          },
+                          "structure": {
+                            "id": "structure",
+                            "enabled": true,
+                            "rules": {
+                              "struct.encryption_allowed": {
+                                "id": "struct.encryption_allowed",
+                                "enabled": true,
+                                "severity": "reject"
+                              }
+                            }
+                          },
+                          "text": {
+                            "id": "text",
+                            "enabled": true,
+                            "rules": {
+                              "text.fonts_embedded": {
+                                "id": "text.fonts_embedded",
+                                "enabled": true,
+                                "severity": "warn"
+                              }
+                            }
+                          },
+                          "color": {
+                            "id": "color",
+                            "enabled": true,
+                            "rules": {
+                              "color.max_ink_coverage": {
+                                "id": "color.max_ink_coverage",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": { "percent": 340 }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": { "title": "Upload your document" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "binding",
+      "title": "Binding",
+      "fields": [
+        {
+          "id": "binding-type",
+          "type": "select-one",
+          "display": "cards",
+          "label": "Binding",
+          "required": true,
+          "options": [
+            {
+              "id": "hardcover",
+              "label": "Premium hardcover",
+              "sku": "HC",
+              "priceModifiers": [{ "type": "fixed", "amount": 14 }]
+            },
+            {
+              "id": "thermal",
+              "label": "Thermal binding",
+              "default": true,
+              "sku": "TB",
+              "priceModifiers": [{ "type": "fixed", "amount": 6 }]
+            },
+            {
+              "id": "spiral",
+              "label": "Spiral binding",
+              "sku": "SP",
+              "priceModifiers": [{ "type": "fixed", "amount": 5 }]
+            }
+          ]
+        },
+        {
+          "id": "thick-warning",
+          "type": "info",
+          "display": "note",
+          "label": "Heads up",
+          "body": "Documents over 400 pages cannot be thermally bound; please choose hardcover or spiral.",
+          "visibleWhen": {
+            "all": [
+              { "ref": "file.pages", "op": "gt", "value": 400 },
+              { "ref": "binding-type", "op": "eq", "value": "thermal" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "quantity",
+      "title": "Copies",
+      "fields": [
+        {
+          "id": "copies",
+          "type": "quantity",
+          "display": "stepper",
+          "label": "Number of copies",
+          "min": 1,
+          "max": 200,
+          "defaultValue": 1
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [{ "id": "recap", "type": "info", "display": "summary" }]
+    }
+  ]
+}

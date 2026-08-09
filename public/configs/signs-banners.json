@@ -288,7 +288,7 @@
         },
         {
             "field": "fileKinds",
-            "quote": "Upload it in one of our accepted formats — PDF, JPG, PNG, AI, or PSD"
+            "quote": "Upload it in one of our accepted formats. PDF, JPG, PNG, AI, or PSD"
         }
     ],
     "assumptions": [
@@ -305,7 +305,7 @@
         {
             "field": "edge_finish.flush_cut",
             "value": "3 mm bleed, 5 mm safe margin",
-            "note": "cut to size — standard trim bleed"
+            "note": "cut to size, standard trim bleed"
         },
         {
             "field": "pole_pockets.top_bottom",

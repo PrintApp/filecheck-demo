@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Acme Print Co. — Folded Brochure</title>
+    <title>Acme Print Co. · Folded Brochure</title>
     <link rel="stylesheet" href="/src/styles.css" />
     <link rel="icon" type="image/png" href="/icon.png" />
     <script src="/demo.js"></script>
@@ -41,17 +41,17 @@
 
             <p class="copy">
                 170 gsm silk, folded and trimmed. Supply one PDF with every page in
-                order — we'll check it has the right number of pages for the fold
+                order; we'll check it has the right number of pages for the fold
                 you picked.
             </p>
 
             <div class="options">
                 <label>Pages
                     <select id="brochure-pages" name="pages">
-                        <option value="4" selected>4 pages — single fold</option>
-                        <option value="6">6 pages — roll fold</option>
-                        <option value="8">8 pages — gate fold</option>
-                        <option value="12">12 pages — booklet</option>
+                        <option value="4" selected>4 pages, single fold</option>
+                        <option value="6">6 pages, roll fold</option>
+                        <option value="8">8 pages, gate fold</option>
+                        <option value="12">12 pages, booklet</option>
                     </select>
                 </label>
                 <label>Size
@@ -82,7 +82,7 @@
 
             <p class="hint">
                 Try it: upload a PDF that passes at 4 pages, then switch the fold to
-                8. The same file is now wrong — and Filecheck says so without
+                8. The same file is now wrong; and Filecheck says so without
                 re-reading the file.
                 Add <code>?fcdebug=1</code> to see what's read off this page.
             </p>
@@ -106,7 +106,7 @@
                 <p>
                     Named groups <code>width</code> and <code>height</code> fill both
                     dimensions from one control. If the pattern ever stops matching,
-                    the entry contributes nothing rather than guessing — the saved
+                    the entry contributes nothing rather than guessing, the saved
                     rule applies instead.
                 </p>
             </details>
@@ -116,7 +116,7 @@
     <script>
         /* ─────────── the shop's own pricing. Not part of Filecheck. ─────────── */
         (function () {
-            // Size affects the sheet cost, quantity the run length — every
+            // Size affects the sheet cost, quantity the run length, every
             // control the customer can touch has to move the price, or the
             // page doesn't behave like a real shop.
             var SIZE_FACTOR = { 'A4 (210 × 297 mm)': 1, 'A5 (148 × 210 mm)': 0.62, 'DL (99 × 210 mm)': 0.48 };
@@ -153,7 +153,7 @@
             ],
         };
 
-        /* Defaults only — the page count and size below are both overwritten
+        /* Defaults only; the page count and size below are both overwritten
            at runtime by whatever the customer picked. */
         var PROFILE = {
             id: 'prof_demo_brochure',
@@ -172,10 +172,10 @@
 
         var WORKFLOW = {
             schemaVersion: 1,
-            title: 'Brochure demo — dynamic page count',
+            title: 'Brochure demo, dynamic page count',
             // Deferred trigger on purpose. `on_accept` advances the job out of
             // intake the moment it completes, which commits the file to
-            // production and correctly locks the queue row — hiding the
+            // production and correctly locks the queue row, hiding the
             // findings and the replace button. A product page needs the
             // customer to keep acting on their file, so the job parks at
             // intake_done until an order is actually placed.

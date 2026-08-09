@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Acme Signs — Outdoor PVC Banner</title>
+    <title>Acme Signs · Outdoor PVC Banner</title>
     <link rel="stylesheet" href="/src/styles.css" />
     <link rel="icon" type="image/png" href="/icon.png" />
     <script src="/demo.js"></script>
@@ -41,7 +41,7 @@
 
             <p class="copy">
                 510 gsm PVC, weatherproof, printed edge to edge. Enter the finished
-                size you need — the price and the artwork check both follow it.
+                size you need; the price and the artwork check both follow it.
             </p>
 
             <!-- ── the shop's own controls. Nothing Filecheck-specific here ── -->
@@ -66,9 +66,9 @@
 
             <fieldset class="options-fieldset">
                 <legend>Finishing</legend>
-                <label><input type="radio" name="finishing" value="hem_eyelets" checked /> Hem and eyelets <em>— needs 25 mm bleed</em></label>
-                <label><input type="radio" name="finishing" value="hem" /> Hem only <em>— needs 15 mm</em></label>
-                <label><input type="radio" name="finishing" value="trimmed" /> Trimmed to size <em>— needs 3 mm</em></label>
+                <label><input type="radio" name="finishing" value="hem_eyelets" checked /> Hem and eyelets <em>, needs 25 mm bleed</em></label>
+                <label><input type="radio" name="finishing" value="hem" /> Hem only <em>, needs 15 mm</em></label>
+                <label><input type="radio" name="finishing" value="trimmed" /> Trimmed to size <em>, needs 3 mm</em></label>
             </fieldset>
 
             <p class="price"><span class="price-now" id="price">£0.00</span> <span class="price-unit">inc. VAT</span></p>
@@ -111,7 +111,7 @@
   ],
 }</code></pre>
                 <p>
-                    A merchant builds this in the Filecheck admin — the selectors are
+                    A merchant builds this in the Filecheck admin, the selectors are
                     filled in automatically for common shop themes.
                 </p>
             </details>
@@ -166,7 +166,7 @@
                   customSelector: '#banner-height',
                   convertFrom: { fromSelector: '#banner-unit', map: UNIT_MAP } },
 
-                // A finish isn't a number — the printer's own table says what
+                // A finish isn't a number; the printer's own table says what
                 // each choice requires.
                 { id: 'r-finish', type: 'read', field: 'finishing',
                   customSelector: 'input[name=finishing]:checked',
@@ -202,7 +202,7 @@
                         target: { required_mm: 25, tolerance_mm: 1, sides: ['all'], fill: 'none' } },
                 } },
                 raster: { id: 'raster', enabled: true, rules: {
-                    // Meaningless without a print size — which is exactly why the
+                    // Meaningless without a print size; which is exactly why the
                     // customer's chosen size has to reach it.
                     'raster.effective_dpi': { id: 'raster.effective_dpi', enabled: true, severity: 'warn',
                         target: { min_dpi: 72, target_width_mm: 3000, target_height_mm: 1000 } },
@@ -212,10 +212,10 @@
 
         var WORKFLOW = {
             schemaVersion: 1,
-            title: 'Banner demo — dynamic size',
+            title: 'Banner demo, dynamic size',
             // Deferred trigger on purpose. `on_accept` advances the job out of
             // intake the moment it completes, which commits the file to
-            // production and correctly locks the queue row — hiding the
+            // production and correctly locks the queue row, hiding the
             // findings and the replace button. A product page needs the
             // customer to keep acting on their file, so the job parks at
             // intake_done until an order is actually placed.

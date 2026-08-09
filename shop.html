@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filecheck × Print Options demo</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <script src="/demo.js"></script>
+    <script src="%VITE_ELEMENT_SRC%"></script>
+    <script type="module" src="%VITE_PO_SRC%"></script>
+</head>
+<body>
+    <nav class="demo-bar">
+        <a href="/">← All demos</a>
+        <a href="/shop.html?product=flyers">Flyers</a>
+        <a href="/shop.html?product=thesis">Thesis</a>
+        <a href="/shop.html?product=stickers">Stickers</a>
+        <a href="/shop.html?product=banner">Banner</a>
+        <a href="/shop.html?product=tshirt">T-shirt</a>
+        <a href="/freetool.html">Free tool</a>
+    </nav>
+
+    <header class="site-header">
+        <div class="logo" data-shop-brand>…</div>
+        <nav>
+            <a class="nav-cta nav-cta-red" target="_blank" href="https://admin.filecheck.io/register">Get Filecheck <span aria-hidden="true">→</span></a>
+            <a href="#">Shop</a>
+            <a href="#">Help</a>
+            <a href="#" class="cart">Cart (0)</a>
+        </nav>
+    </header>
+
+    <main class="product">
+        <section class="product-gallery">
+            <div class="product-swatch" data-shop-swatch aria-hidden="true"></div>
+
+            <div class="try-box" data-shop-try hidden>
+                <h2>Try it</h2>
+                <ol data-shop-try-steps></ol>
+                <p class="try-samples-title">Sample files</p>
+                <ul class="sample-links" data-shop-samples></ul>
+            </div>
+        </section>
+
+        <section class="product-details">
+            <p class="breadcrumb" data-shop-breadcrumb></p>
+            <h1 data-shop-title>Loading…</h1>
+            <p class="rating">★★★★★ <span>(borrowed reviews)</span></p>
+            <p class="copy" data-shop-copy></p>
+
+            <!-- The whole product form: options, live price, upload, add to
+                 cart. Rendered by <print-configurator>; the upload field
+                 inside it is the Filecheck intake. -->
+            <div id="po-slot"></div>
+
+            <p class="hint">
+                The uploader above runs inside the Print Options form, the
+                blueprint puts it right before Add&nbsp;to&nbsp;Cart. Add
+                <code>?fcdebug=1</code> to the URL to see what Filecheck is told
+                about your selections.
+            </p>
+
+            <details class="integration">
+                <summary>How this page is wired</summary>
+                <p>
+                    One web component, one JSON document. The blueprint declares
+                    the options and their prices, and carries a transient inline
+                    Filecheck workflow on its file field; so it runs against any
+                    tenant with nothing configured in either admin.
+                </p>
+<pre><code>&lt;print-configurator
+  config-url="<span data-shop-config-url></span>"
+  provider='{"id":"filecheck","mode":"element",
+             "publishableKey":"pk_…","preview":true}'
+&gt;&lt;/print-configurator&gt;</code></pre>
+                <p>
+                    Selections reach the check through the blueprint's
+                    <code>filecheck.context</code> patches (size, sides →
+                    page&nbsp;count); the file's facts flow back and reprice the
+                    form. <a data-shop-config-link href="#">View the raw
+                    blueprint&nbsp;+&nbsp;workflow</a>.
+                </p>
+            </details>
+        </section>
+    </main>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var params = new URLSearchParams(location.search);
+        var slug = params.get('product') || 'flyers';
+
+        function text(sel, value) {
+            var el = document.querySelector(sel);
+            if (el) el.textContent = value;
+        }
+
+        function renderChrome(entry) {
+            document.title = entry.brand + ' · ' + entry.title;
+            text('[data-shop-brand]', entry.brand);
+            text('[data-shop-breadcrumb]', entry.breadcrumb);
+            text('[data-shop-title]', entry.title);
+            text('[data-shop-copy]', entry.copy);
+            text('[data-shop-config-url]', entry.config);
+
+            var swatch = document.querySelector('[data-shop-swatch]');
+            if (swatch) {
+                swatch.textContent = entry.swatch;
+                if (entry.swatchClass) swatch.classList.add(entry.swatchClass);
+            }
+
+            var link = document.querySelector('[data-shop-config-link]');
+            if (link) link.href = entry.config;
+
+            var tryBox = document.querySelector('[data-shop-try]');
+            var steps = document.querySelector('[data-shop-try-steps]');
+            var samples = document.querySelector('[data-shop-samples]');
+            if (tryBox && steps && samples) {
+                (entry.tryIt || []).forEach(function (step) {
+                    var li = document.createElement('li');
+                    li.textContent = step;
+                    steps.appendChild(li);
+                });
+                (entry.samples || []).forEach(function (sample) {
+                    var li = document.createElement('li');
+                    var a = document.createElement('a');
+                    a.href = sample.href;
+                    a.textContent = sample.label;
+                    a.setAttribute('download', '');
+                    li.appendChild(a);
+                    samples.appendChild(li);
+                });
+                tryBox.hidden = false;
+            }
+        }
+
+        function mountConfigurator(entry) {
+            var po = document.createElement('print-configurator');
+            po.setAttribute('product-id', entry.productId);
+            po.setAttribute('config-url', entry.config);
+            po.setAttribute('upload-endpoint', 'https://api.print.app/po/secure-upload');
+            po.setAttribute('data-verify-endpoint', 'https://api.print.app/po/verify-price');
+
+            /* Store-level provider config: this is where the publishable key
+               lives, never in the blueprint. FCDemo resolves ?pk= /
+               localStorage / the demo tenant's key, same as every other page
+               on this site. */
+            var provider = {
+                id: 'filecheck',
+                name: 'Filecheck',
+                mode: 'element',
+                publishableKey: FCDemo.key(),
+                preview: FCDemo.preview,
+                capabilities: {
+                    pages: true,
+                    colorDetection: true,
+                    pageSizes: true,
+                    canvas: true,
+                    preflightIssues: true
+                }
+            };
+            var opts = FCDemo.options();
+            if (opts.iframeSrc) provider.iframeSrc = opts.iframeSrc;
+            po.setAttribute('provider', JSON.stringify(provider));
+
+            po.addEventListener('submit', function (event) {
+                var detail = (event.detail && event.detail[0]) || {};
+                var price = detail.price || {};
+                alert(
+                    'Added to cart (demo).\n' +
+                    'Verified total: ' + (price.currency || '') + ' ' + (price.total != null ? price.total : ', ')
+                );
+            });
+
+            document.getElementById('po-slot').appendChild(po);
+        }
+
+        fetch('/catalog.json')
+            .then(function (res) { return res.json(); })
+            .then(function (catalog) {
+                var entry = catalog.products && catalog.products[slug];
+                if (!entry) {
+                    text('[data-shop-title]', 'Unknown product “' + slug + '”');
+                    text('[data-shop-copy]', 'Pick a demo from the bar above.');
+                    return;
+                }
+                renderChrome(entry);
+                mountConfigurator(entry);
+            })
+            .catch(function (err) {
+                text('[data-shop-title]', 'Could not load the demo catalog');
+                text('[data-shop-copy]', String(err));
+            });
+    })();
+    </script>
+</body>
+</html>

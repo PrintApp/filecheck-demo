@@ -1,5 +1,5 @@
 /**
- * Demo-site plumbing — NOT part of a Filecheck integration.
+ * Demo-site plumbing. NOT part of a Filecheck integration.
  *
  * Every page here keeps its own Filecheck wiring inline and visible, because
  * the pages double as copy-paste examples. This file holds only the things a
@@ -10,11 +10,11 @@
  * with a plain <script> from any page, dev or production.
  *
  * Key resolution, most specific first:
- *   1. ?pk= / ?workflow= on the URL      — one-off, wins everything
- *   2. localStorage                       — "Try your own key" on the landing
+ *   1. ?pk= / ?workflow= on the URL     , one-off, wins everything
+ *   2. localStorage                      . "Try your own key" on the landing
  *                                           page, so a printer enters it once
  *                                           and every demo inherits it
- *   3. the demo tenant's own key          — the default
+ *   3. the demo tenant's own key         , the default
  */
 (function () {
     var STORE_KEY = 'fc-demo-key';
@@ -31,7 +31,7 @@
         try {
             if (value) localStorage.setItem(name, value);
             else localStorage.removeItem(name);
-        } catch (e) { /* private browsing — the defaults still work */ }
+        } catch (e) { /* private browsing; the defaults still work */ }
     };
 
     var FCDemo = {
@@ -75,7 +75,7 @@
         /**
          * Mark a page as running in preview mode. Transient inline workflows
          * are preview-tagged server-side: unmetered, webhook-silent, and
-         * short-retention — which is what lets these pages run against any
+         * short-retention; which is what lets these pages run against any
          * tenant without configuring anything in the admin.
          */
         preview: true,

@@ -217,7 +217,7 @@
         {
             "field": "finishing.trimmed_to_size",
             "value": "3 mm bleed, 5 mm safe margin",
-            "note": "cut to size — standard trim bleed"
+            "note": "cut to size, standard trim bleed"
         },
         {
             "field": "bleed",

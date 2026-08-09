@@ -1,0 +1,324 @@
+{
+  "version": "2.0",
+  "productId": "demo-tshirt-dtg",
+  "title": "Printed t-shirt",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    }
+  },
+  "sections": [
+    {
+      "id": "garment",
+      "title": "Your shirt",
+      "fields": [
+        {
+          "id": "gsize",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Size",
+          "required": true,
+          "options": [
+            {
+              "id": "s",
+              "label": "S",
+              "priceModifiers": []
+            },
+            {
+              "id": "m",
+              "label": "M",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "l",
+              "label": "L",
+              "priceModifiers": []
+            },
+            {
+              "id": "xl",
+              "label": "XL",
+              "priceModifiers": []
+            },
+            {
+              "id": "xxl",
+              "label": "XXL",
+              "priceModifiers": []
+            }
+          ]
+        },
+        {
+          "id": "colour",
+          "type": "select-one",
+          "display": "swatches",
+          "label": "Colour",
+          "required": true,
+          "options": [
+            {
+              "id": "white",
+              "label": "White",
+              "color": "#f5f5f2",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "black",
+              "label": "Black",
+              "color": "#16161a",
+              "description": "Dark garments need a white underbase.",
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 2
+                }
+              ]
+            },
+            {
+              "id": "navy",
+              "label": "Navy",
+              "color": "#223a5e",
+              "description": "Dark garments need a white underbase.",
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "print",
+      "title": "Print",
+      "fields": [
+        {
+          "id": "printsize",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Print area",
+          "required": true,
+          "options": [
+            {
+              "id": "a4",
+              "label": "A4 chest print",
+              "default": true,
+              "priceModifiers": [],
+              "filecheck": {
+                "context": {
+                  "artworkSize": {
+                    "width_mm": 210,
+                    "height_mm": 297
+                  }
+                }
+              }
+            },
+            {
+              "id": "a3",
+              "label": "A3 full front",
+              "priceModifiers": [
+                {
+                  "type": "perUnit",
+                  "amount": 4
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "artworkSize": {
+                    "width_mm": 297,
+                    "height_mm": 420
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your design - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your design (PNG with transparency works best)",
+          "helpText": "A flat white background will print as a white box on the shirt; we warn you before it does. Resolution is judged at the print area you picked.",
+          "required": true,
+          "accept": [
+            "image/png",
+            "image/jpeg",
+            "image/tiff"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "T-shirt demo",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Shirt print checks; background and resolution at garment size.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "raster",
+                    "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/tiff"
+                    ],
+                    "extensions": [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "tif",
+                      "tiff"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_tshirt",
+                        "schemaVersion": 1,
+                        "description": "T-shirt print checks; raster artwork at garment size",
+                        "sections": {
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 150,
+                                  "target_width_mm": 210,
+                                  "target_height_mm": 297
+                                }
+                              },
+                              "raster.background_removal": {
+                                "id": "raster.background_removal",
+                                "enabled": true,
+                                "severity": "warn"
+                              },
+                              "raster.min_dimensions_px": {
+                                "id": "raster.min_dimensions_px",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_width": 1000,
+                                  "min_height": 1000
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your design"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "quantity",
+      "title": "Quantity",
+      "fields": [
+        {
+          "id": "qty",
+          "type": "quantity",
+          "display": "pills",
+          "label": "How many shirts?",
+          "min": 1,
+          "defaultValue": 10,
+          "presets": [
+            10,
+            25,
+            50,
+            100
+          ],
+          "priceModifiers": [
+            {
+              "type": "perUnit",
+              "amount": 12,
+              "tiers": {
+                "basis": "quantity",
+                "mode": "flat",
+                "rows": [
+                  {
+                    "upTo": 24,
+                    "amount": 12
+                  },
+                  {
+                    "upTo": 99,
+                    "amount": 9.5
+                  },
+                  {
+                    "amount": 7.5
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

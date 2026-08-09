@@ -18,6 +18,23 @@ const DEV_ELEMENT_SRC  = '/element/filecheck.js';
 const PROD_ELEMENT_SRC  = 'https://cdn.filecheck.io/element/v1/filecheck.js';
 
 /**
+ * Same idea for the Print Options configurator bundle, used by the
+ * `shop.html` combined demos (`%VITE_PO_SRC%` placeholder).
+ *
+ * - **dev**: served by middleware from the sibling product-options repo's
+ *   local build, so widget changes show up without a CDN deploy.
+ * - **build/prod**: the published demo bundle.
+ */
+const DEV_PO_SRC  = '/po/print-configurator.js';
+const PROD_PO_SRC = 'https://options.print.app/demo/print-configurator.js';
+
+/** Where the product-options repo's built widget lives on this machine. */
+const PO_DIST_DEFAULT = resolve(
+    __dirname, '..', '..', '..', '..',
+    'pa', 'product-options', 'packages', 'core-ui', 'dist', 'print-configurator.js',
+);
+
+/**
  * Serves the freshly-built IIFE bundle from
  * `packages/element/dist/filecheck.js` at the same path the public CDN
  * exposes:  /element/filecheck.js
@@ -50,6 +67,38 @@ function serveElementBundle(): Plugin {
     };
 }
 
+/**
+ * Serves the product-options widget bundle at /po/print-configurator.js in
+ * dev. Override the source path with a `PO_DIST` env var when the repos are
+ * not siblings under the same root.
+ */
+function servePoBundle(): Plugin {
+    const bundlePath = process.env.PO_DIST ?? PO_DIST_DEFAULT;
+
+    return {
+        name: 'demo:serve-po-bundle',
+        configureServer(server) {
+            server.middlewares.use('/po/print-configurator.js', async (_req, res) => {
+                try {
+                    const body = await readFile(bundlePath);
+                    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+                    res.setHeader('Cache-Control', 'no-store');
+                    res.end(body);
+                } catch (err) {
+                    res.statusCode = 404;
+                    res.end(
+                        `// print-configurator.js not found at\n` +
+                        `//   ${bundlePath}\n` +
+                        `// Build it (pnpm --filter @product-options/core-ui build)\n` +
+                        `// or set PO_DIST to the built file.\n` +
+                        `// (error: ${(err as Error).message})\n`,
+                    );
+                }
+            });
+        },
+    };
+}
+
 export default defineConfig(({ command }) => {
     // Feed the `%VITE_ELEMENT_SRC%` placeholder in the HTML entries. An
     // explicit env var wins; otherwise dev serves the local bundle and a build
@@ -57,9 +106,12 @@ export default defineConfig(({ command }) => {
     process.env.VITE_ELEMENT_SRC =
         process.env.VITE_ELEMENT_SRC ??
         (command === 'serve' ? DEV_ELEMENT_SRC : PROD_ELEMENT_SRC);
+    process.env.VITE_PO_SRC =
+        process.env.VITE_PO_SRC ??
+        (command === 'serve' ? DEV_PO_SRC : PROD_PO_SRC);
 
     return {
-        plugins: [serveElementBundle()],
+        plugins: [serveElementBundle(), servePoBundle()],
         build: {
             // Every demo page must be listed here or it simply is not built —
             // Vite's default is index.html alone, which is why the extra pages
@@ -72,6 +124,9 @@ export default defineConfig(({ command }) => {
                     brochure:      resolve(__dirname, 'brochure.html'),
                     freetool:      resolve(__dirname, 'freetool.html'),
                     report:        resolve(__dirname, 'report.html'),
+                    // Combined Filecheck × Print Options demos. One page,
+                    // many products — ?product=<slug> picks the blueprint.
+                    shop:          resolve(__dirname, 'shop.html'),
                     // Prospect samples. One page, many configs — deliberately
                     // NOT linked from the landing page; the link is emailed.
                     clientSample:  resolve(__dirname, 'client-sample.html'),

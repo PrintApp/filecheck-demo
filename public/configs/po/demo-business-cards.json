@@ -1,0 +1,508 @@
+{
+  "version": "2.0",
+  "productId": "demo-business-cards",
+  "title": "Business cards",
+  "layout": "stacked",
+  "pricing": {
+    "currency": "USD",
+    "basePrice": {
+      "amount": 0,
+      "per": "order"
+    }
+  },
+  "sections": [
+    {
+      "id": "print",
+      "title": "Your cards",
+      "fields": [
+        {
+          "id": "sides",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Sides",
+          "required": true,
+          "options": [
+            {
+              "id": "single",
+              "label": "Single-sided",
+              "default": true,
+              "priceModifiers": [],
+              "filecheck": {
+                "context": {
+                  "pageCount": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              }
+            },
+            {
+              "id": "double",
+              "label": "Double-sided",
+              "description": "Upload a 2-page file, front, then back.",
+              "priceModifiers": [
+                {
+                  "type": "multiplier",
+                  "amount": 1.4
+                }
+              ],
+              "filecheck": {
+                "context": {
+                  "pageCount": {
+                    "min": 2,
+                    "max": 2
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "artwork",
+      "title": "Your artwork - Filecheck",
+      "fields": [
+        {
+          "id": "artwork",
+          "type": "file",
+          "display": "dropzone",
+          "label": "Upload your card design",
+          "helpText": "Standard 85 × 55 mm cards. We check size, bleed, safe zone, resolution and that your fonts are embedded.",
+          "required": true,
+          "accept": [
+            "application/pdf",
+            "image/jpeg",
+            "image/png",
+            "image/tiff"
+          ],
+          "providerId": "filecheck",
+          "filecheck": {
+            "workflowId": "wf_inline_demo",
+            "workflow": {
+              "schemaVersion": 1,
+              "title": "Business cards demo",
+              "trigger": "order_placed",
+              "intake": {
+                "ruleId": null,
+                "onError": "halt",
+                "enabled": true
+              },
+              "streams": [],
+              "merge": {
+                "mode": "none",
+                "config": {},
+                "onError": "halt",
+                "enabled": true
+              },
+              "finalize": [],
+              "proofing": {
+                "enabled": false,
+                "type": "basic",
+                "timing": "after_intake",
+                "requireApproval": false,
+                "config": {}
+              },
+              "delivery": {
+                "enabled": false,
+                "destinationIds": []
+              },
+              "enabled": true,
+              "ui": {},
+              "rule": {
+                "description": "Business card checks, the everyday baseline.",
+                "cardinality": {
+                  "min": 1,
+                  "max": 1,
+                  "slots": []
+                },
+                "accepts": [
+                  {
+                    "kind": "pdf",
+                    "mimeTypes": [
+                      "application/pdf"
+                    ],
+                    "extensions": [
+                      "pdf"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_cards",
+                        "schemaVersion": 1,
+                        "description": "Business card checks",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 85,
+                                      "height_mm": 55
+                                    }
+                                  ],
+                                  "tolerance_mm": 1,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.page_count": {
+                                "id": "geom.page_count",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "min": 1,
+                                  "max": 1,
+                                  "allowed": []
+                                }
+                              },
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 3,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              },
+                              "geom.safety_margin": {
+                                "id": "geom.safety_margin",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_mm": 3
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 300,
+                                  "target_width_mm": 85,
+                                  "target_height_mm": 55
+                                }
+                              }
+                            }
+                          },
+                          "text": {
+                            "id": "text",
+                            "enabled": true,
+                            "rules": {
+                              "text.fonts_embedded": {
+                                "id": "text.fonts_embedded",
+                                "enabled": true,
+                                "severity": "warn"
+                              },
+                              "text.min_font_size_pt": {
+                                "id": "text.min_font_size_pt",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "pt": 5
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  },
+                  {
+                    "kind": "raster",
+                    "mimeTypes": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/tiff"
+                    ],
+                    "extensions": [
+                      "jpg",
+                      "jpeg",
+                      "png",
+                      "tif",
+                      "tiff"
+                    ],
+                    "maxSize": 100000000,
+                    "convertToPdf": false,
+                    "preflight": {
+                      "enabled": true,
+                      "profile": {
+                        "id": "prof_demo_cards",
+                        "schemaVersion": 1,
+                        "description": "Business card checks",
+                        "sections": {
+                          "geometry": {
+                            "id": "geometry",
+                            "enabled": true,
+                            "rules": {
+                              "geom.page_size": {
+                                "id": "geom.page_size",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "allowed": [
+                                    {
+                                      "width_mm": 85,
+                                      "height_mm": 55
+                                    }
+                                  ],
+                                  "tolerance_mm": 1,
+                                  "autofix_within_percent": 0
+                                }
+                              },
+                              "geom.page_count": {
+                                "id": "geom.page_count",
+                                "enabled": true,
+                                "severity": "reject",
+                                "target": {
+                                  "min": 1,
+                                  "max": 1,
+                                  "allowed": []
+                                }
+                              },
+                              "geom.bleed.required": {
+                                "id": "geom.bleed.required",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "required_mm": 3,
+                                  "tolerance_mm": 1,
+                                  "sides": [
+                                    "all"
+                                  ],
+                                  "fill": "none"
+                                }
+                              },
+                              "geom.safety_margin": {
+                                "id": "geom.safety_margin",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_mm": 3
+                                }
+                              }
+                            }
+                          },
+                          "raster": {
+                            "id": "raster",
+                            "enabled": true,
+                            "rules": {
+                              "raster.effective_dpi": {
+                                "id": "raster.effective_dpi",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "min_dpi": 300,
+                                  "target_width_mm": 85,
+                                  "target_height_mm": 55
+                                }
+                              }
+                            }
+                          },
+                          "text": {
+                            "id": "text",
+                            "enabled": true,
+                            "rules": {
+                              "text.fonts_embedded": {
+                                "id": "text.fonts_embedded",
+                                "enabled": true,
+                                "severity": "warn"
+                              },
+                              "text.min_font_size_pt": {
+                                "id": "text.min_font_size_pt",
+                                "enabled": true,
+                                "severity": "warn",
+                                "target": {
+                                  "pt": 5
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "onFail": "reject"
+                  }
+                ],
+                "rejectUnknownTypes": true,
+                "enabled": true,
+                "ui": {
+                  "title": "Upload your card design"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "finishing",
+      "title": "Paper & finish",
+      "fields": [
+        {
+          "id": "paper",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Paper",
+          "role": "material",
+          "required": true,
+          "options": [
+            {
+              "id": "std-350",
+              "label": "350 gsm silk",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "premium-450",
+              "label": "450 gsm premium",
+              "priceModifiers": [
+                {
+                  "type": "multiplier",
+                  "amount": 1.15
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lamination",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Lamination",
+          "required": true,
+          "options": [
+            {
+              "id": "none",
+              "label": "None",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "matte",
+              "label": "Matte laminate",
+              "priceModifiers": [
+                {
+                  "type": "percent",
+                  "amount": 15
+                }
+              ]
+            },
+            {
+              "id": "soft-touch",
+              "label": "Soft touch",
+              "priceModifiers": [
+                {
+                  "type": "percent",
+                  "amount": 25
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "corners",
+          "type": "select-one",
+          "display": "pills",
+          "label": "Corners",
+          "required": true,
+          "options": [
+            {
+              "id": "square",
+              "label": "Square",
+              "default": true,
+              "priceModifiers": []
+            },
+            {
+              "id": "rounded",
+              "label": "Rounded",
+              "description": "One-off die charge.",
+              "priceModifiers": [
+                {
+                  "type": "fixed",
+                  "amount": 10
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quantity",
+      "title": "Quantity",
+      "fields": [
+        {
+          "id": "copies",
+          "type": "quantity",
+          "display": "pills",
+          "label": "How many?",
+          "min": 50,
+          "defaultValue": 100,
+          "presets": [
+            100,
+            250,
+            500,
+            1000
+          ],
+          "priceModifiers": [
+            {
+              "type": "perUnit",
+              "amount": 0.12,
+              "tiers": {
+                "basis": "quantity",
+                "mode": "flat",
+                "rows": [
+                  {
+                    "upTo": 249,
+                    "amount": 0.12
+                  },
+                  {
+                    "upTo": 499,
+                    "amount": 0.08
+                  },
+                  {
+                    "upTo": 999,
+                    "amount": 0.055
+                  },
+                  {
+                    "amount": 0.04
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "fields": [
+        {
+          "id": "recap",
+          "type": "info",
+          "display": "summary"
+        }
+      ]
+    }
+  ]
+}

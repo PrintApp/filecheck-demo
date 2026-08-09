@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Filecheck — Free Tool Recipe (list-mode intake + file-scoped report)</title>
+    <title>Filecheck · Free Tool Recipe (list-mode intake + file-scoped report)</title>
     <link rel="stylesheet" href="/src/styles.css" />
     <script src="/demo.js"></script>
     <style>
@@ -73,7 +73,7 @@
             data-mode report on the right. Upload one or more files: the first
             terminal file auto-selects; clicking a row switches the report.
             Pass <code>?pk=&lt;key&gt;&amp;wf=&lt;workflowId&gt;</code>
-            (and <code>?nodl=1</code> to gate downloads) — or
+            (and <code>?nodl=1</code> to gate downloads), or
             <code>?inline=1</code> to run a <strong>transient inline workflow</strong>
             with <code>preview: true</code> instead of a saved one (acceptance
             test for the backend previewWorkflow contract, backend-skill.md §15).
@@ -106,8 +106,8 @@
             var inline = p.get('inline') !== '0';
 
             /* Transient inline workflow (?inline=1): the whole check travels
-               with the page — the profile body rides RAW at its point of use
-               (accept.preflight.profile; never a made-up profileId — the
+               with the page; the profile body rides RAW at its point of use
+               (accept.preflight.profile; never a made-up profileId, the
                pipeline resolves ids against the Library, and null means
                "run every check"). Validated server-side as `previewWorkflow`;
                jobs are preview-tagged and short-retention. */
@@ -126,7 +126,7 @@
             };
             var INLINE_WORKFLOW = {
                 schemaVersion: 1,
-                title: 'Freetool demo — inline preflight',
+                title: 'Freetool demo, inline preflight',
                 // Nothing happens after the check on a free tool, so the job
                 // stays at intake_done. `on_accept` would advance it out of
                 // intake, which locks the row and takes away the customer's
@@ -184,7 +184,7 @@
             intake.on('error', function (e) {
                 console.warn('[freetool] intake error', e);
                 if (e.code === 'validate_failed') {
-                    alert('Validate rejected the inline workflow — backend previewWorkflow support (backend-skill.md §15) not deployed yet?');
+                    alert('Validate rejected the inline workflow, backend previewWorkflow support (backend-skill.md §15) not deployed yet?');
                 }
             });
             intake.on('status', function (e) {
@@ -193,12 +193,11 @@
             intake.mount('#fc-intake');
 
             /* ── Report, data mode: rendered from the fileSelect handoff ──
-               No second socket, no job fetch — the intake already holds the
+               No second socket, no job fetch; the intake already holds the
                report body and delivers it in `e.report`, including a
                presigned `downloadUrl` so the viewer can serve the fixed
                file itself. The toolbar's "Download report" prints to PDF.
-               (Fetch mode — create('report', { jobId, fileId, token }) —
-               remains available for post-purchase pages; see report.html.) */
+               (Fetch mode; create('report', { jobId, fileId, token }), remains available for post-purchase pages; see report.html.) */
             var report = null;
 
             intake.on('fileSelect', function (e) {
