@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
     <title>Filecheck · product page sample</title>
-    <link rel="stylesheet" href="/src/styles.css" />
-    <link rel="icon" type="image/png" href="/icon.png" />
-    <script src="/demo.js"></script>
+    <link rel="stylesheet" href="src/styles.css" />
+    <link rel="icon" type="image/png" href="icon.png" />
+    <script>window.__FC_ENV__ = { base: '%VITE_BASE%', clean: '%VITE_CLEAN_URLS%' };</script>
+    <script src="demo.js"></script>
     <script src="%VITE_ELEMENT_SRC%"></script>
 </head>
 <body>
@@ -109,7 +110,7 @@
 
         if (!id) return show('s-missing');
 
-        fetch('/configs/' + encodeURIComponent(id) + '.json')
+        fetch(FCDemo.url('configs/' + encodeURIComponent(id) + '.json'))
             .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
             .then(build)
             .catch(function () { show('s-missing'); });
@@ -277,7 +278,7 @@
             SAMPLES.forEach(function (s) {
                 var li = el('li');
                 var a = el('a', 'sample-file');
-                a.href = '/samples/' + s.file;
+                a.href = FCDemo.url('samples/' + s.file);
                 a.download = s.file;
                 a.appendChild(el('strong', null, s.label));
                 a.appendChild(el('span', null, s.why));

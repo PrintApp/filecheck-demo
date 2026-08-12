@@ -2,3 +2,5 @@ node_modules
 dist
 .vite
 *.log
+dist-demos
+public/po

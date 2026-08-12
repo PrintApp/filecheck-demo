@@ -22,6 +22,14 @@
 
     var DEFAULT_PK = 'pk_01KRX2E9SGXZCAXR7QZ2TW00YM';
 
+    /* Deploy base. Each page sets window.__FC_ENV__ from Vite env before this
+       script loads: '/' on demo.filecheck.io, '/demos/' when the same site is
+       served under filecheck.io/demos. Guard against the raw placeholder in
+       case the file is opened outside a Vite build. */
+    var ENV   = window.__FC_ENV__ || {};
+    var BASE  = (typeof ENV.base === 'string' && ENV.base.indexOf('%') === -1 && ENV.base) || '/';
+    var CLEAN = ENV.clean === '1';
+
     var params = new URLSearchParams(location.search);
 
     var read = function (name) {
@@ -79,6 +87,25 @@
          * tenant without configuring anything in the admin.
          */
         preview: true,
+
+        /** The base path this deployment serves from ('/' or '/demos/'). */
+        base: BASE,
+
+        /** Site-absolute URL for a root-relative resource path. */
+        url: function (path) {
+            return BASE + String(path).replace(/^\/+/, '');
+        },
+
+        /**
+         * Link to a product demo. Builds get the clean static URL
+         * (<base><slug>/); dev falls back to the query-param template, since
+         * the static pages only exist in built output.
+         */
+        productHref: function (slug) {
+            return CLEAN
+                ? BASE + encodeURIComponent(slug) + '/'
+                : BASE + 'shop.html?product=' + encodeURIComponent(slug);
+        },
     };
 
     window.FCDemo = FCDemo;
@@ -87,13 +114,17 @@
        Marks the current page in the demo bar and wires the "your own key"
        form when a page renders one. Purely cosmetic. */
     document.addEventListener('DOMContentLoaded', function () {
-        var here = location.pathname.replace(/\/$/, '') || '/index.html';
+        // Resolve each link against the page so relative hrefs (the norm now
+        // that the site deploys under more than one base path) compare
+        // correctly. index.html and trailing slashes are equivalent.
+        var norm = function (p) { return p.replace(/index\.html$/, '').replace(/\/$/, ''); };
+        var here = norm(location.pathname);
         var links = document.querySelectorAll('.demo-bar a[href]');
         for (var i = 0; i < links.length; i++) {
-            var href = links[i].getAttribute('href').replace(/\/$/, '');
-            if (href === here || (here === '/index.html' && href === '/')) {
-                links[i].classList.add('is-current');
-            }
+            try {
+                var linkPath = norm(new URL(links[i].getAttribute('href'), location.href).pathname);
+                if (linkPath === here) links[i].classList.add('is-current');
+            } catch (e) { /* ignore unparseable hrefs */ }
         }
 
         var badge = document.querySelector('[data-fc-key-badge]');

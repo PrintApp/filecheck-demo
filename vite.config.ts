@@ -23,10 +23,14 @@ const PROD_ELEMENT_SRC  = 'https://cdn.filecheck.io/element/v1/filecheck.js';
  *
  * - **dev**: served by middleware from the sibling product-options repo's
  *   local build, so widget changes show up without a CDN deploy.
- * - **build/prod**: the published demo bundle.
+ * - **build/prod**: SELF-HOSTED copy (tools/build-demo.mjs syncs it into
+ *   public/po/). It is a module script, and cross-origin module loads from
+ *   options.print.app hit the same CORS cache-variant poisoning that made
+ *   the storefront adapters self-host — same cure here. Relative path so
+ *   it works at both deploy bases.
  */
 const DEV_PO_SRC  = '/po/print-configurator.js';
-const PROD_PO_SRC = 'https://options.print.app/demo/print-configurator.js';
+const PROD_PO_SRC = '/po/print-configurator.js';
 
 /** Where the product-options repo's built widget lives on this machine. */
 const PO_DIST_DEFAULT = resolve(
@@ -110,7 +114,18 @@ export default defineConfig(({ command }) => {
         process.env.VITE_PO_SRC ??
         (command === 'serve' ? DEV_PO_SRC : PROD_PO_SRC);
 
+    // Deploy base. '/' for demo.filecheck.io (the default); '/demos/' when
+    // building the copy served under filecheck.io/demos. Pages inject this
+    // into window.__FC_ENV__ (see demo.js) so runtime URL building follows.
+    const base = process.env.VITE_BASE ?? '/';
+    process.env.VITE_BASE = base;
+    // Builds link products by their clean static URLs (/flyers/); dev links
+    // shop.html?product= because the static pages only exist in built output.
+    process.env.VITE_CLEAN_URLS =
+        process.env.VITE_CLEAN_URLS ?? (command === 'build' ? '1' : '');
+
     return {
+        base,
         plugins: [serveElementBundle(), servePoBundle()],
         build: {
             // Every demo page must be listed here or it simply is not built —

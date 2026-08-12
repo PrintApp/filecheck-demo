@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Filecheck · Live demos</title>
     <meta name="description" content="Live, working examples of Filecheck checking customer artwork on real product pages; with prices computed by Print Options from what it finds." />
-    <link rel="stylesheet" href="/src/styles.css" />
-    <link rel="icon" type="image/png" href="/icon.png" />
-    <script src="/demo.js"></script>
+    <link rel="stylesheet" href="src/styles.css" />
+    <link rel="icon" type="image/png" href="icon.png" />
+    <script>window.__FC_ENV__ = { base: '%VITE_BASE%', clean: '%VITE_CLEAN_URLS%' };</script>
+    <script src="demo.js"></script>
 </head>
 <body>
     <header class="site-header">
@@ -45,7 +46,7 @@
 
         <main class="landing-main">
             <div id="catalog-sections">
-                <noscript><p>The demo catalog needs JavaScript. All demos are also reachable at <a href="/shop.html">shop.html</a>.</p></noscript>
+                <noscript><p>The demo catalog needs JavaScript. All demos are also reachable at <a href="shop.html">shop.html</a>.</p></noscript>
             </div>
 
             <section class="cat-section" id="section-patterns" data-section data-section-title="Integration patterns">
@@ -54,7 +55,7 @@
                     <span class="cat-byline">Under 20 lines each, view source</span>
                 </div>
                 <div class="cat-rows">
-                    <a class="cat-row" href="/pvc-banner.html" data-tags="size|bleed">
+                    <a class="cat-row" href="pvc-banner.html" data-tags="size|bleed">
                         <span class="row-id">
                             <span class="row-kicker">Hand-wired</span>
                             <span class="row-title">PVC banner</span>
@@ -62,7 +63,7 @@
                         <span class="row-desc">A connector reads the shop's own size inputs and writes the measured size back.</span>
                         <span class="row-pills"><span class="pill">two-way sync</span></span>
                     </a>
-                    <a class="cat-row" href="/business-cards.html" data-tags="cart gating">
+                    <a class="cat-row" href="business-cards.html" data-tags="cart gating">
                         <span class="row-id">
                             <span class="row-kicker">Hand-wired</span>
                             <span class="row-title">Business cards</span>
@@ -70,7 +71,7 @@
                         <span class="row-desc">An uploader and an Add to Cart button that stays disabled until the artwork passes.</span>
                         <span class="row-pills"><span class="pill">cart gating</span></span>
                     </a>
-                    <a class="cat-row" href="/brochure.html" data-tags="page count">
+                    <a class="cat-row" href="brochure.html" data-tags="page count">
                         <span class="row-id">
                             <span class="row-kicker">Hand-wired</span>
                             <span class="row-title">Folded brochure</span>
@@ -78,7 +79,7 @@
                         <span class="row-desc">Switch four pages to eight and the same file is suddenly wrong.</span>
                         <span class="row-pills"><span class="pill">page count</span></span>
                     </a>
-                    <a class="cat-row row-green" href="/freetool.html" data-tags="">
+                    <a class="cat-row row-green" href="freetool.html" data-tags="">
                         <span class="row-id">
                             <span class="row-kicker">Free tool</span>
                             <span class="row-title">Preflight checker</span>
@@ -86,7 +87,7 @@
                         <span class="row-desc">A multi-file drop zone beside a live report, the filecheck.io tools recipe.</span>
                         <span class="row-pills"><span class="pill">report element</span></span>
                     </a>
-                    <a class="cat-row" href="/report.html" data-tags="">
+                    <a class="cat-row" href="report.html" data-tags="">
                         <span class="row-id">
                             <span class="row-kicker">Post-purchase</span>
                             <span class="row-title">Order report</span>
@@ -138,7 +139,7 @@
 
         function row(slug, entry) {
             var a = el('a', 'cat-row');
-            a.href = '/shop.html?product=' + encodeURIComponent(slug);
+            a.href = FCDemo.productHref(slug);
             a.dataset.tags = (entry.tags || []).join('|');
             var id = el('span', 'row-id');
             id.appendChild(el('span', 'row-kicker', entry.brand));
@@ -151,7 +152,7 @@
             return a;
         }
 
-        fetch('/catalog.json')
+        fetch(FCDemo.url('catalog.json'))
             .then(function (res) { return res.json(); })
             .then(function (catalog) {
                 var byCategory = {};

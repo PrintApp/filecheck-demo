@@ -715,6 +715,56 @@ body {
 }
 
 /* ─── shop.html (combined Filecheck × Print Options demos) ─── */
+
+/* Hero layout: Filecheck owns the wide left column, the Print Options form
+   is a narrow reactive rail on the right. */
+.product.product-hero-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    align-items: start;
+}
+.product-strip {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+.product-swatch-strip {
+    aspect-ratio: auto;
+    width: 96px;
+    height: 60px;
+    flex: 0 0 auto;
+    font-size: 13px;
+    border-radius: 8px;
+}
+.product-strip-id .breadcrumb { margin: 0 0 2px; }
+.product-strip-id h1 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.15;
+}
+.fc-hero {
+    padding: 18px 18px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+}
+.fc-hero-label {
+    margin: 0 0 4px;
+    font-size: 16px;
+}
+.fc-hero-hint {
+    margin: 0 0 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+.fc-hero-hint:empty { display: none; }
+.product-hero .try-box { margin-top: 16px; }
+.product-rail .copy { margin-top: 0; }
+@media (max-width: 880px) {
+    .product.product-hero-layout { grid-template-columns: 1fr; }
+}
+
 .try-box {
     margin-top: 20px;
     padding: 16px 18px;
