@@ -72,6 +72,24 @@ function serveElementBundle(): Plugin {
 }
 
 /**
+ * demo.filecheck.io (base '/') duplicates content whose canonical home is
+ * filecheck.io/demos. The generated product pages carry a cross-host
+ * canonical for that; the hand-written entry pages have none, so the
+ * demo-host build marks them noindex to keep the host out of search.
+ * The '/demos/' build is untouched.
+ */
+function noindexDemoHost(base: string): Plugin {
+    return {
+        name: 'demo:noindex-demo-host',
+        apply: 'build',
+        transformIndexHtml(html) {
+            if (base !== '/') return html;
+            return html.replace(/<head>/i, '<head>\n    <meta name="robots" content="noindex">');
+        },
+    };
+}
+
+/**
  * Serves the product-options widget bundle at /po/print-configurator.js in
  * dev. Override the source path with a `PO_DIST` env var when the repos are
  * not siblings under the same root.
@@ -126,7 +144,7 @@ export default defineConfig(({ command }) => {
 
     return {
         base,
-        plugins: [serveElementBundle(), servePoBundle()],
+        plugins: [serveElementBundle(), servePoBundle(), noindexDemoHost(base)],
         build: {
             // Every demo page must be listed here or it simply is not built —
             // Vite's default is index.html alone, which is why the extra pages
